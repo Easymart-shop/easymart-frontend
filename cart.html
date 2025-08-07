@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Cart - EasyMart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      margin: 0;
+    }
+
+.cart-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* বাটন আর টাইটেলের মাঝে ফাঁকা */
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.continue-shopping-btn {
+  background-color: #088a2d;
+  color: white;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.continue-shopping-btn:hover {
+  background-color: #03a91c;
+}
+
+   
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .cart-item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .cart-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .cart-details {
+      flex-grow: 1;
+      min-width: 200px;
+    }
+    .remove-btn {
+      background-color: red;
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .remove-btn:hover {
+      background-color: darkred;
+    }
+
+.qty-btn {
+  padding: 6px 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+.qty-btn:hover {
+  background-color: #218838;
+}
+
+
+
+    .checkout-btn {
+      display: block;
+      width: 90%;
+      max-width: 300px;
+      margin: 20px auto;
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .checkout-btn:hover {
+      background-color: #218838;
+    }
+    .empty {
+      text-align: center;
+      color: #888;
+      margin-top: 50px;
+      font-size: 18px;
+    }
+    .total-box {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #333;
+    }
+    .payment-section {
+      max-width: 100%;
+      width: 400px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+    }
+    .payment-section label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .payment-section select,
+    .payment-section textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 14px;
+      resize: vertical;
+    }
+    @media screen and (max-width: 500px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .cart-item img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Continue Shopping Button -->
+  
+<h2 style="text-align:center;">🛒 Your Cart</h2>
+<div style="text-align:center; margin-bottom:20px;">
+  <a href="index.html" class="continue-shopping-btn">🛍️ Continue Shopping</a>
+</div>
+
+
+  <div id="cart-items"></div>
+  <div id="total" class="total-box"></div>
+
+  <div class="payment-section" id="payment-section">
+    <label for="payment-method">Select Payment Method:</label>
+    <select id="payment-method" onchange="updateTotal()">
+      <option value="bKash">bKash</option>
+      <option value="Nagad">Nagad</option>
+      <option value="Rocket">Rocket</option>
+      <option value="Visa/Mastercard">Visa / Mastercard</option>
+      <option value="COD">Cash On Delivery (+৳20 delivery charge)</option>
+    </select>
+    <label for="address">Enter Delivery Address:</label>
+    <textarea id="address" rows="3" placeholder="Your delivery address..." required></textarea>
+    <button class="checkout-btn" onclick="confirmPayment()">Confirm & Pay</button>
+  </div>
+
+  <button class="checkout-btn" onclick="showPayment()">Place Order</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const { jsPDF } = window.jspdf;
+    let cartItems = JSON.parse(localStorage.getItem('cartData')) || [];
+    const container = document.getElementById("cart-items");
+    const totalBox = document.getElementById("total");
+    const paymentSection = document.getElementById("payment-section");
+    const paymentSelect = document.getElementById("payment-method");
+    const addressInput = document.getElementById("address");
+    const DELIVERY_CHARGE_BASE = 120;
+    const COD_EXTRA_CHARGE = 20;
+
+    let currentTotal = 0;
+    let currentDeliveryCharge = DELIVERY_CHARGE_BASE;
+
+    function renderCart() {
+      container.innerHTML = '';
+      let total = 0;
+
+      if (cartItems.length === 0) {
+        container.innerHTML = '<p class="empty">Your cart is empty.</p>';
+        totalBox.innerText = '';
+        document.querySelectorAll(".checkout-btn").forEach(btn => btn.style.display = "none");
+        paymentSection.style.display = "none";
+        return;
+      }
+
+      document.querySelectorAll(".checkout-btn").forEach(btn => btn.style.display = "block");
+
+      cartItems.forEach((item, index) => {
+        const price = parseFloat(item.price);
+        const quantity = parseInt(item.quantity);
+        total += price * quantity;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+  <img src="${item.img}" alt="${item.name}">
+  <div class="cart-details">
+    <h3>${item.name}</h3>
+    <p>Price: ৳${price}</p>
+    <p>
+      Quantity: 
+      <button class="qty-btn" onclick="changeQuantity(${index}, -1)">-</button>
+      ${quantity}
+      <button class="qty-btn" onclick="changeQuantity(${index}, 1)">+</button>
+    </p>
+  </div>
+  <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+`;
+
+        container.appendChild(div);
+      });
+
+      currentTotal = total;
+      updateTotal();
+    }
+
+function changeQuantity(index, change) {
+  cartItems[index].quantity += change;
+  if (cartItems[index].quantity < 1) {
+    cartItems[index].quantity = 1;
+  }
+  localStorage.setItem('cartData', JSON.stringify(cartItems));
+  renderCart();
+}
+
+
+
+    function updateTotal() {
+      const method = paymentSelect.value;
+      currentDeliveryCharge = DELIVERY_CHARGE_BASE;
+      if (method === "COD") currentDeliveryCharge += COD_EXTRA_CHARGE;
+      const grandTotal = currentTotal + currentDeliveryCharge;
+      totalBox.innerText = `Subtotal: ৳${currentTotal} + Delivery: ৳${currentDeliveryCharge} = Total: ৳${grandTotal}`;
+    }
+
+    function removeItem(index) {
+      cartItems.splice(index, 1);
+      localStorage.setItem('cartData', JSON.stringify(cartItems));
+      renderCart();
+    }
+
+    function showPayment() {
+      if (cartItems.length > 0) {
+        paymentSection.style.display = "block";
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }
+
+    function confirmPayment() {
+      const method = paymentSelect.value;
+      const address = addressInput.value.trim();
+      if (!address) {
+        alert("Please enter your delivery address.");
+        addressInput.focus();
+        return;
+      }
+
+      const doc = new jsPDF();
+      const date = new Date();
+      const invoiceId = `INV-${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}-${Math.floor(Math.random() * 10000)}`;
+
+      doc.setFontSize(40);
+      doc.text("EasyMart", 105, 20, null, null, 'center');
+      doc.setFontSize(12);
+      doc.text(`Invoice ID: ${invoiceId}`, 14, 30);
+      doc.text(`Date: ${date.toLocaleDateString()}`, 150, 30);
+      doc.text("Delivery Address:", 14, 40);
+      const splitAddress = doc.splitTextToSize(address, 180);
+      doc.text(splitAddress, 14, 46);
+
+      let y = 60;
+      doc.setFontSize(14);
+      doc.text("Product Summary:", 14, y);
+      y += 6;
+
+      cartItems.forEach((item, i) => {
+        const price = parseFloat(item.price);
+        const quantity = parseInt(item.quantity);
+        const line = `${i + 1}. ${item.name} - TK--${price} x ${quantity} = TK--${price * quantity}`;
+        doc.setFontSize(12);
+        doc.text(line, 14, y);
+        y += 8;
+      });
+
+      doc.setFontSize(12);
+      doc.text(`Subtotal: TK--${currentTotal}`, 150, y);
+      y += 6;
+      doc.text(`Delivery: TK--${currentDeliveryCharge}`, 150, y);
+      y += 6;
+      doc.setFontSize(14);
+      doc.text(`Total: TK--${currentTotal + currentDeliveryCharge}`, 150, y);
+      y += 20;
+
+      doc.setFontSize(12);
+      doc.text("Signature: ______________________", 14, y);
+
+      doc.save("EasyMart_Invoice.pdf");
+
+      alert(`✅ Thank you! Your order has been placed.\nPayment Method: ${method}\nTotal Payable: ৳${currentTotal + currentDeliveryCharge}`);
+
+// Confirm & Pay সফল হওয়ার পর স্টক কমানো
+let stockData = JSON.parse(localStorage.getItem("stockData")) || {};
+cartItems.forEach(item => {
+  if (stockData[item.name] !== undefined) {
+    stockData[item.name] = Math.max(0, stockData[item.name] - item.quantity);
+  }
+});
+localStorage.setItem("stockData", JSON.stringify(stockData));
+
+
+
+
+      cartItems = [];
+      localStorage.setItem('cartData', JSON.stringify(cartItems));
+      localStorage.setItem('cartCount', '0');
+      renderCart();
+      document.getElementById("cart-count") && (document.getElementById("cart-count").innerText = '0');
+      paymentSection.style.display = "none";
+      addressInput.value = '';
+      paymentSelect.value = "bKash";
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
