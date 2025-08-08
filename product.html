@@ -87,6 +87,9 @@
   <div class="go-to-cart-container">
     <a href="cart.html" class="go-to-cart-btn">🛒 Go to Cart (<span id="go-cart-count">0</span>)</a>
   </div>
+
+  <div id="product-details"></div>
+
   <div class="container">
     <div class="product-details">
       <div class="image-slider">
@@ -130,176 +133,196 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const params = new URLSearchParams(window.location.search);
-      const productName = params.get('name');
-      if (!productName) {
-        alert("Product not found.");
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');           // primary: id
+  const productName = params.get('name');       // fallback: name (optional)
+
+  // Update top-right cart count
+  function updateGoCartCount() {
+    const cartData = JSON.parse(localStorage.getItem('cartData')) || [];
+    document.getElementById("go-cart-count").innerText = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  }
+  updateGoCartCount();
+
+  // Ensure stockData exists (backward compatible with name-keyed stock)
+  if (!localStorage.getItem('stockData')) {
+    localStorage.setItem("stockData", JSON.stringify({
+      "Face Cream": 10,
+      "Smart Watch": 5,
+      "Headphone": 8,
+      "Medicine Kit": 7
+    }));
+  }
+  let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
+
+  // Fetch all products (safe fallback even if backend doesn't support /:id)
+  fetch("https://easymart-backend-4vh1.onrender.com/api/products")
+    .then(res => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+    .then(data => {
+      console.log("PRODUCTS from API:", data);
+
+      // Find product by id first, otherwise by name (backward compatibility)
+      const p = productId ? data.find(item => String(item.id) === String(productId))
+                          : productName ? data.find(item => item.name === productName) : null;
+
+      if (!p) {
+        alert("Product not found in backend.");
         return location.href = "index.html";
       }
 
-      // Initialize stock if not present
-      if (!localStorage.getItem('stockData')) {
-        localStorage.setItem("stockData", JSON.stringify({
-          "Face Cream": 10,
-          "Smart Watch": 5,
-          "Headphone": 8,
-          "Medicine Kit": 7
-        }));
+      // Prepare stock key (try id first, then name)
+      const stockKey = (p.id !== undefined && p.id !== null) ? String(p.id) : p.name;
+      if (stockData[stockKey] === undefined) {
+        // if old name-key exists, carry over
+        if (stockData[p.name] !== undefined) stockData[stockKey] = stockData[p.name];
+        else stockData[stockKey] = 10; // default
+        localStorage.setItem("stockData", JSON.stringify(stockData));
+      }
+      let currentStock = stockData[stockKey];
+
+      // Element refs
+      const stockInfo = document.getElementById("stock-info");
+      const addBtn = document.getElementById("add-to-cart-btn");
+      const productImg = document.getElementById("product-img");
+      const extraImageSlider = document.getElementById("extra-image-slider");
+      const productTitle = document.getElementById("product-title");
+      const productDesc = document.getElementById("product-description");
+      const productPrice = document.getElementById("product-price");
+      const productOldPrice = document.getElementById("product-old-price");
+      const relatedContainer = document.getElementById("related-products");
+
+      function updateStockUI() {
+        if (currentStock > 0) {
+          stockInfo.innerText = `✅ In Stock (${currentStock})`;
+          addBtn.disabled = false;
+          addBtn.style.background = "green";
+          addBtn.style.cursor = "pointer";
+        } else {
+          stockInfo.innerText = `⛔ Out of Stock`;
+          addBtn.disabled = true;
+          addBtn.style.background = "gray";
+          addBtn.style.cursor = "not-allowed";
+        }
       }
 
-      // Update cart count on top right
-      function updateGoCartCount() {
-        const cartData = JSON.parse(localStorage.getItem('cartData')) || [];
-        document.getElementById("go-cart-count").innerText = cartData.reduce((sum, item) => sum + item.quantity, 0);
+      // Fill main fields
+      productImg.src = p.image || "";
+      productTitle.innerText = p.name || "";
+      productDesc.innerText = p.description || "";
+      productPrice.innerText = p.price !== undefined ? `৳${p.price}` : "";
+      productOldPrice.innerText = p.oldPrice ? `৳${p.oldPrice}` : "";
+
+      // Extra images slider
+      const images = [p.image, ...(p.extraImgs || [])].filter(Boolean);
+      let currentIndex = 0;
+      extraImageSlider.innerHTML = "";
+      images.forEach((imgSrc, i) => {
+        const img = document.createElement("img");
+        img.src = imgSrc;
+        if (i === 0) img.classList.add("selected");
+        img.onclick = () => {
+          currentIndex = i;
+          productImg.src = imgSrc;
+          extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
+          img.classList.add("selected");
+        };
+        extraImageSlider.appendChild(img);
+      });
+
+      // Arrow buttons
+      const leftArrow = document.querySelector(".arrow.left");
+      const rightArrow = document.querySelector(".arrow.right");
+      if (leftArrow && rightArrow && images.length > 0) {
+        leftArrow.onclick = () => {
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          productImg.src = images[currentIndex];
+          extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
+          extraImageSlider.querySelectorAll("img")[currentIndex].classList.add("selected");
+        };
+        rightArrow.onclick = () => {
+          currentIndex = (currentIndex + 1) % images.length;
+          productImg.src = images[currentIndex];
+          extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
+          extraImageSlider.querySelectorAll("img")[currentIndex].classList.add("selected");
+        };
       }
-      updateGoCartCount();
 
-      // Fetch all products from backend
-      fetch("https://easymart-backend-4vh1.onrender.com/api/products")
+      updateStockUI();
 
-        .then(res => res.json())
-        .then(data => {
-          // Find this product
-          const p = data.find(item => item.name === productName);
-          if (!p) {
-            alert("Product not found in backend.");
-            return location.href = "index.html";
-          }
+      // Add to cart logic (store id in cart)
+      addBtn.onclick = () => {
+        if (currentStock <= 0) { alert("Sorry, this product is out of stock."); return; }
 
-          const stockData = JSON.parse(localStorage.getItem("stockData")) || {};
-          let currentStock = stockData[p.name] ?? 0;
+        let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+        const existing = cart.find(i => String(i.id) === String(p.id));
+        if (existing) existing.quantity++;
+        else cart.push({ id: p.id, name: p.name, price: p.price, img: p.image, quantity: 1 });
 
-          // Elements references
-          const stockInfo = document.getElementById("stock-info");
-          const addBtn = document.getElementById("add-to-cart-btn");
-          const productImg = document.getElementById("product-img");
-          const extraImageSlider = document.getElementById("extra-image-slider");
-          const productTitle = document.getElementById("product-title");
-          const productDesc = document.getElementById("product-description");
-          const productPrice = document.getElementById("product-price");
-          const productOldPrice = document.getElementById("product-old-price");
-          const relatedContainer = document.getElementById("related-products");
+        localStorage.setItem("cartData", JSON.stringify(cart));
 
-          function updateStockUI() {
-  stockInfo.innerText = `✅ In Stock`;  // সবসময় In Stock দেখাবে
-  addBtn.disabled = false;              // বাটন সবসময় সক্রিয় থাকবে
-  addBtn.style.background = "green";
-  addBtn.style.cursor = "pointer";
-}
+        // decrement stock and save
+        currentStock--;
+        stockData[stockKey] = currentStock;
+        localStorage.setItem("stockData", JSON.stringify(stockData));
+        updateStockUI();
+        updateGoCartCount();
+        alert("Added to cart!");
+      };
 
-
-          // Show main product info
-          productImg.src = p.image;
-          productTitle.innerText = p.name;
-          productDesc.innerText = p.description;
-          productPrice.innerText = `৳${p.price}`;
-          productOldPrice.innerText = p.oldPrice ? `৳${p.oldPrice}` : "";
-
-          // Image slider setup
-          const images = [p.image, ...(p.extraImgs || [])];
-          let currentIndex = 0;
-          extraImageSlider.innerHTML = "";
-
-          images.forEach((imgSrc, i) => {
-            const img = document.createElement("img");
-            img.src = imgSrc;
-            if (i === 0) img.classList.add("selected");
-            img.onclick = () => {
-              currentIndex = i;
-              productImg.src = imgSrc;
-              extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
-              img.classList.add("selected");
-            };
-            extraImageSlider.appendChild(img);
-          });
-
-          // Arrow buttons for slider
-          document.querySelector(".arrow.left").onclick = () => {
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            productImg.src = images[currentIndex];
-            extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
-            extraImageSlider.querySelectorAll("img")[currentIndex].classList.add("selected");
-          };
-          document.querySelector(".arrow.right").onclick = () => {
-            currentIndex = (currentIndex + 1) % images.length;
-            productImg.src = images[currentIndex];
-            extraImageSlider.querySelectorAll("img").forEach(el => el.classList.remove("selected"));
-            extraImageSlider.querySelectorAll("img")[currentIndex].classList.add("selected");
-          };
-
-          updateStockUI();
-
-          // Add to cart button click
-          addBtn.onclick = () => {
-          
-
-            let cart = JSON.parse(localStorage.getItem("cartData")) || [];
-            const existing = cart.find(i => i.name === p.name);
-            if (existing) existing.quantity++;
-            else cart.push({ name: p.name, price: p.price, img: p.image, quantity: 1 });
-            localStorage.setItem("cartData", JSON.stringify(cart));
-
-            currentStock--;
-            stockData[p.name] = currentStock;
-            localStorage.setItem("stockData", JSON.stringify(stockData));
-            updateStockUI();
-            updateGoCartCount();
-            alert("Added to cart!");
-          };
-
-          // Customer reviews logic
-          const reviewsKey = "reviews_" + p.name;
-          let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
-
-          function renderReviews() {
-            const container = document.getElementById("review-list");
-            container.innerHTML = "";
-            if (reviews.length === 0) {
-              container.innerHTML = "<p>No reviews yet.</p>";
-              return;
-            }
-            reviews.forEach(r => {
-              const div = document.createElement("div");
-              div.className = "review";
-              div.innerHTML = `<div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div><div>${r.text}</div>`;
-              container.appendChild(div);
-            });
-          }
-          renderReviews();
-
-          document.getElementById("submit-review-btn").onclick = () => {
-            const text = document.getElementById("review-text").value.trim();
-            const rating = parseInt(document.getElementById("review-rating").value);
-            if (!text) return alert("Please write a review first.");
-            reviews.push({ text, rating });
-            localStorage.setItem(reviewsKey, JSON.stringify(reviews));
-            renderReviews();
-            document.getElementById("review-text").value = "";
-            alert("Thank you for your review!");
-          };
-
-          // Related products
-          relatedContainer.innerHTML = "";
-          data.forEach(prod => {
-            if (prod.name === p.name) return; // skip current product
-            const a = document.createElement("a");
-            a.href = `product.html?name=${encodeURIComponent(prod.name)}`;
-            a.className = "related-product";
-            a.innerHTML = `
-              <img src="${prod.image}" alt="${prod.name}" />
-              <h4>${prod.name}</h4>
-              <p><span class='old-price'>৳${prod.oldPrice}</span> ৳${prod.price}</p>
-            `;
-            relatedContainer.appendChild(a);
-          });
-        })
-        .catch(err => {
-          console.error("Error fetching product:", err);
-          alert("Error loading product data.");
-          location.href = "index.html";
+      // Reviews (use id-based key if available)
+      const reviewsKey = "reviews_" + (p.id !== undefined ? p.id : p.name);
+      let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+      function renderReviews() {
+        const container = document.getElementById("review-list");
+        container.innerHTML = "";
+        if (!reviews || reviews.length === 0) { container.innerHTML = "<p>No reviews yet.</p>"; return; }
+        reviews.forEach(r => {
+          const div = document.createElement("div");
+          div.className = "review";
+          div.innerHTML = `<div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div><div>${r.text}</div>`;
+          container.appendChild(div);
         });
+      }
+      renderReviews();
+
+      document.getElementById("submit-review-btn").onclick = () => {
+        const text = document.getElementById("review-text").value.trim();
+        const rating = parseInt(document.getElementById("review-rating").value);
+        if (!text) return alert("Please write a review first.");
+        reviews.push({ text, rating });
+        localStorage.setItem(reviewsKey, JSON.stringify(reviews));
+        renderReviews();
+        document.getElementById("review-text").value = "";
+        alert("Thank you for your review!");
+      };
+
+      // Related products (link by id)
+      relatedContainer.innerHTML = "";
+      data.forEach(prod => {
+        if (String(prod.id) === String(p.id)) return;
+        const a = document.createElement("a");
+        a.href = `product.html?id=${encodeURIComponent(prod.id)}`;
+        a.className = "related-product";
+        a.innerHTML = `
+          <img src="${prod.image}" alt="${prod.name}" />
+          <h4>${prod.name}</h4>
+          <p><span class='old-price'>${prod.oldPrice ? '৳' + prod.oldPrice : ''}</span> ৳${prod.price}</p>
+        `;
+        relatedContainer.appendChild(a);
+      });
+
+    })
+    .catch(err => {
+      console.error("Error fetching product:", err);
+      alert("Error loading product data.");
+      location.href = "index.html";
     });
-  </script>
+});
+</script>
+
 </body>
 </html>
