@@ -509,7 +509,7 @@ body {
   
 document.addEventListener("click", function (e) {
   if (e.target.classList.contains("add-to-cart-btn")) {
-    const productDiv = e.target.closest(".product");  // '.product' class অনুসারে ঠিক করো
+    const productDiv = e.target.closest(".product");  // '.product' ক্লাস অনুসারে সঠিক এলিমেন্ট নেবে
     if (!productDiv) return;
 
     const name = productDiv.querySelector("h4").innerText;
@@ -533,7 +533,7 @@ document.addEventListener("click", function (e) {
     localStorage.setItem("cartData", JSON.stringify(cart));
     alert("পণ্যটি কার্টে যোগ হয়েছে!");
     
-    // কার্ট কাউন্ট আপডেট করার জন্য তুমি updateCartCount() ফাংশন কল করতে পারো যদি থাকে
+    // যদি কার্ট কাউন্ট আপডেট করার ফাংশন থাকে, কল করো
     if (typeof updateCartCount === "function") updateCartCount();
   }
 });
