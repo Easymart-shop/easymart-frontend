@@ -132,59 +132,53 @@
     </div>
   </div>
 
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id');           // primary: id
-  const productName = params.get('name');       // fallback: name (optional)
+  const productId = params.get('id');
 
-  // Update top-right cart count
+  if (!productId) {
+    alert("Product ID missing.");
+    return location.href = "index.html";
+  }
+
+  // Cart count update function
   function updateGoCartCount() {
     const cartData = JSON.parse(localStorage.getItem('cartData')) || [];
     document.getElementById("go-cart-count").innerText = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
   }
   updateGoCartCount();
 
-  // Ensure stockData exists (backward compatible with name-keyed stock)
+  // Ensure stockData exists
   if (!localStorage.getItem('stockData')) {
-    localStorage.setItem("stockData", JSON.stringify({
-      "Face Cream": 10,
-      "Smart Watch": 5,
-      "Headphone": 8,
-      "Medicine Kit": 7
-    }));
+    localStorage.setItem("stockData", JSON.stringify({}));
   }
   let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
 
-  // Fetch all products (safe fallback even if backend doesn't support /:id)
   fetch("https://easymart-backend-4vh1.onrender.com/api/products")
     .then(res => {
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
     })
-    .then(data => {
-      console.log("PRODUCTS from API:", data);
+    .then(products => {
+      // খুঁজে বের করো প্রোডাক্ট আইডি দিয়ে
+      const product = products.find(p => String(p._id || p.id) === productId);
 
-      // Find product by id first, otherwise by name (backward compatibility)
-      const p = productId ? data.find(item => String(item.id) === String(productId))
-                          : productName ? data.find(item => item.name === productName) : null;
-
-      if (!p) {
-        alert("Product not found in backend.");
+      if (!product) {
+        alert("Product not found.");
         return location.href = "index.html";
       }
 
-      // Prepare stock key (try id first, then name)
-      const stockKey = (p.id !== undefined && p.id !== null) ? String(p.id) : p.name;
+      // স্টক কী (id অথবা name)
+      const stockKey = product.id || product.name;
+
       if (stockData[stockKey] === undefined) {
-        // if old name-key exists, carry over
-        if (stockData[p.name] !== undefined) stockData[stockKey] = stockData[p.name];
-        else stockData[stockKey] = 10; // default
+        stockData[stockKey] = 10; // default stock
         localStorage.setItem("stockData", JSON.stringify(stockData));
       }
       let currentStock = stockData[stockKey];
 
-      // Element refs
+      // এলিমেন্টস রেফারেন্স
       const stockInfo = document.getElementById("stock-info");
       const addBtn = document.getElementById("add-to-cart-btn");
       const productImg = document.getElementById("product-img");
@@ -195,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const productOldPrice = document.getElementById("product-old-price");
       const relatedContainer = document.getElementById("related-products");
 
+      // স্টক UI আপডেট ফাংশন
       function updateStockUI() {
         if (currentStock > 0) {
           stockInfo.innerText = `✅ In Stock (${currentStock})`;
@@ -209,15 +204,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Fill main fields
-      productImg.src = p.image || "";
-      productTitle.innerText = p.name || "";
-      productDesc.innerText = p.description || "";
-      productPrice.innerText = p.price !== undefined ? `৳${p.price}` : "";
-      productOldPrice.innerText = p.oldPrice ? `৳${p.oldPrice}` : "";
+      // ডাটা ফিল আপডেট
+      productImg.src = product.image || "";
+      productTitle.innerText = product.name || "";
+      productDesc.innerText = product.description || "";
+      productPrice.innerText = product.price !== undefined ? `৳${product.price}` : "";
+      productOldPrice.innerText = product.oldPrice ? `৳${product.oldPrice}` : "";
 
-      // Extra images slider
-      const images = [p.image, ...(p.extraImgs || [])].filter(Boolean);
+      // এক্সট্রা ইমেজ স্লাইডার সেটআপ (যদি থাকে)
+      const images = [product.image, ...(product.extraImgs || [])].filter(Boolean);
       let currentIndex = 0;
       extraImageSlider.innerHTML = "";
       images.forEach((imgSrc, i) => {
@@ -233,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraImageSlider.appendChild(img);
       });
 
-      // Arrow buttons
+      // অ্যারো বাটন কাজ (যদি থাকে)
       const leftArrow = document.querySelector(".arrow.left");
       const rightArrow = document.querySelector(".arrow.right");
       if (leftArrow && rightArrow && images.length > 0) {
@@ -253,18 +248,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateStockUI();
 
-      // Add to cart logic (store id in cart)
+      // Add to Cart বাটন ক্লিক
       addBtn.onclick = () => {
-        if (currentStock <= 0) { alert("Sorry, this product is out of stock."); return; }
+        if (currentStock <= 0) {
+          alert("Sorry, this product is out of stock.");
+          return;
+        }
 
         let cart = JSON.parse(localStorage.getItem("cartData")) || [];
-        const existing = cart.find(i => String(i.id) === String(p.id));
+        const existing = cart.find(i => String(i.id) === String(product.id));
         if (existing) existing.quantity++;
-        else cart.push({ id: p.id, name: p.name, price: p.price, img: p.image, quantity: 1 });
+        else cart.push({ id: product.id, name: product.name, price: product.price, img: product.image, quantity: 1 });
 
         localStorage.setItem("cartData", JSON.stringify(cart));
 
-        // decrement stock and save
+        // স্টক কমাও
         currentStock--;
         stockData[stockKey] = currentStock;
         localStorage.setItem("stockData", JSON.stringify(stockData));
@@ -273,13 +271,16 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Added to cart!");
       };
 
-      // Reviews (use id-based key if available)
-      const reviewsKey = "reviews_" + (p.id !== undefined ? p.id : p.name);
+      // রিভিউ লোড ও রেন্ডার
+      const reviewsKey = "reviews_" + (product.id || product.name);
       let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
       function renderReviews() {
         const container = document.getElementById("review-list");
         container.innerHTML = "";
-        if (!reviews || reviews.length === 0) { container.innerHTML = "<p>No reviews yet.</p>"; return; }
+        if (!reviews.length) {
+          container.innerHTML = "<p>No reviews yet.</p>";
+          return;
+        }
         reviews.forEach(r => {
           const div = document.createElement("div");
           div.className = "review";
@@ -289,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       renderReviews();
 
+      // রিভিউ সাবমিশন
       document.getElementById("submit-review-btn").onclick = () => {
         const text = document.getElementById("review-text").value.trim();
         const rating = parseInt(document.getElementById("review-rating").value);
@@ -300,10 +302,10 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Thank you for your review!");
       };
 
-      // Related products (link by id)
+      // সম্পর্কিত প্রোডাক্ট দেখাও (id ভিন্ন)
       relatedContainer.innerHTML = "";
-      data.forEach(prod => {
-        if (String(prod.id) === String(p.id)) return;
+      products.forEach(prod => {
+        if (String(prod.id) === String(product.id)) return;
         const a = document.createElement("a");
         a.href = `product.html?id=${encodeURIComponent(prod.id)}`;
         a.className = "related-product";
@@ -322,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
       location.href = "index.html";
     });
 });
-</script>
 
+</script>
 </body>
 </html>

@@ -460,22 +460,25 @@ body {
     const container = document.querySelector(".products");
     container.innerHTML = "";
 
-    data.forEach(product => { 
+   data.forEach(product => { 
   const productHTML = `
-    <a href="product.html?name=${encodeURIComponent(product.name)}&price=${product.price}&oldprice=${product.oldPrice}&img=${encodeURIComponent(product.image)}&desc=${encodeURIComponent(product.description)}&extraImgs=${product.extraImgs?.join(',') || ''}" style="text-decoration:none;color:inherit;">
-      <div class="product">
+    <div class="product">
+      <a href="product.html?id=${encodeURIComponent(product._id || product.id)}" style="text-decoration:none;color:inherit;">
         <img src="${product.image}" alt="${product.name}" />
         <h4>${product.name}</h4>
         <p><span class="old-price">৳${product.oldPrice}</span>৳${product.price}</p>
-        <p class="stock-info" style="font-weight:bold;color:red;">${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}</p>
+        <p class="stock-info" style="font-weight:bold;color:${product.stock > 0 ? 'green' : 'red'};">
+          ${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
+        </p>
         <div class="stars" style="color:gold;font-size:16px;margin-bottom:5px;">★★★★☆</div>
-        <button class="add-to-cart-btn" type="button">Add to Cart</button>
-
-      </div>
-    </a>
+      </a>
+      <button class="add-to-cart-btn" type="button">Add to Cart</button>
+    </div>
   `;
-  container.innerHTML += productHTML;
+  // এখানে productHTML কে তোমার container-এ যোগ করবে
 });
+
+
 
 
     updateStockAndCartButtons();
@@ -505,55 +508,67 @@ body {
 
   
 document.addEventListener("click", function (e) {
-    if (e.target.classList.contains("add-to-cart-btn")) {
-      const productCard = e.target.closest(".product-card");
-      const name = productCard.querySelector("h3").innerText;
-      const price = parseFloat(productCard.querySelector(".price ins").innerText.replace("৳", ""));
-      const image = productCard.querySelector("img").src;
-      const id = productCard.getAttribute("data-id");
+  if (e.target.classList.contains("add-to-cart-btn")) {
+    const productDiv = e.target.closest(".product");  // '.product' class অনুসারে ঠিক করো
+    if (!productDiv) return;
 
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const existingItem = cart.find(item => item.id === id);
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.push({ id, name, price, image, quantity: 1 });
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-      alert("পণ্যটি কার্টে যোগ হয়েছে!");
+    const name = productDiv.querySelector("h4").innerText;
+    const priceText = productDiv.querySelector("p").innerText; // যেমন: "৳100 ৳70"
+    const priceMatch = priceText.match(/৳(\d+(\.\d+)?)/g);
+    let price = 0;
+    if (priceMatch && priceMatch.length > 0) {
+      price = parseFloat(priceMatch[priceMatch.length - 1].replace("৳", ""));
     }
-  });
+
+    const image = productDiv.querySelector("img").src;
+
+    let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+    const existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem("cartData", JSON.stringify(cart));
+    alert("পণ্যটি কার্টে যোগ হয়েছে!");
+    
+    // কার্ট কাউন্ট আপডেট করার জন্য তুমি updateCartCount() ফাংশন কল করতে পারো যদি থাকে
+    if (typeof updateCartCount === "function") updateCartCount();
+  }
+});
 
 
 
-const productListContainer = document.getElementById("product-list-container");
+
+const container = document.querySelector(".products");
+container.innerHTML = ""; // পুরনো কিছু থাকলে মুছে দাও
 
 fetch("https://easymart-backend-4vh1.onrender.com/api/products")
   .then(res => res.json())
-  .then(products => {
-    productListContainer.innerHTML = ""; // পুরনো কিছু থাকলে মুছে দাও
-
-    products.forEach(product => {
-      const div = document.createElement("div");
-      div.className = "product-card";  // CSS class দিয়ে স্টাইল দিতে পারো
-
-      div.innerHTML = `
-        <a href="product.html?id=${encodeURIComponent(product.id)}" style="text-decoration:none; color:inherit;">
-          <img src="${product.image}" alt="${product.name}" width="150" />
-          <h3>${product.name}</h3>
-          <p>৳${product.price}</p>
-        </a>
+  .then(data => {
+    data.forEach(product => {
+      const productHTML = `
+        <div class="product">
+          <a href="product.html?id=${encodeURIComponent(product._id || product.id)}" style="text-decoration:none;color:inherit;">
+            <img src="${product.image}" alt="${product.name}" />
+            <h4>${product.name}</h4>
+            <p><span class="old-price">৳${product.oldPrice}</span>৳${product.price}</p>
+            <p class="stock-info" style="font-weight:bold;color:${product.stock > 0 ? 'green' : 'red'};">
+              ${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
+            </p>
+            <div class="stars" style="color:gold;font-size:16px;margin-bottom:5px;">★★★★☆</div>
+          </a>
+          <button class="add-to-cart-btn" type="button">Add to Cart</button>
+        </div>
       `;
-
-      productListContainer.appendChild(div);
+      container.insertAdjacentHTML('beforeend', productHTML);
     });
-  })
-  .catch(err => {
-    productListContainer.innerText = "দুঃখিত, প্রোডাক্ট লোড করতে সমস্যা হয়েছে।";
-    console.error("Error fetching products:", err);
-  });
 
+    updateStockAndCartButtons();
+    addCartButtonListeners();
+  })
+  .catch(err => console.error("Error fetching products:", err));
 
 
 
