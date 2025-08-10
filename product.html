@@ -133,23 +133,22 @@
   </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const productId = params.get('id');
 
   if (!productId) {
     alert("Product ID missing.");
-    return location.href = "index.html";
+    location.href = "index.html";
+    return;
   }
 
-  // Cart count update function
   function updateGoCartCount() {
     const cartData = JSON.parse(localStorage.getItem('cartData')) || [];
     document.getElementById("go-cart-count").innerText = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
   }
   updateGoCartCount();
 
-  // Ensure stockData exists
   if (!localStorage.getItem('stockData')) {
     localStorage.setItem("stockData", JSON.stringify({}));
   }
@@ -161,24 +160,22 @@
       return res.json();
     })
     .then(products => {
-      // খুঁজে বের করো প্রোডাক্ট আইডি দিয়ে
       const product = products.find(p => String(p._id || p.id) === productId);
 
       if (!product) {
         alert("Product not found.");
-        return location.href = "index.html";
+        location.href = "index.html";
+        return;
       }
 
-      // স্টক কী (id অথবা name)
       const stockKey = product.id || product.name;
 
       if (stockData[stockKey] === undefined) {
-        stockData[stockKey] = 10; // default stock
+        stockData[stockKey] = 10;
         localStorage.setItem("stockData", JSON.stringify(stockData));
       }
       let currentStock = stockData[stockKey];
 
-      // এলিমেন্টস রেফারেন্স
       const stockInfo = document.getElementById("stock-info");
       const addBtn = document.getElementById("add-to-cart-btn");
       const productImg = document.getElementById("product-img");
@@ -189,7 +186,6 @@
       const productOldPrice = document.getElementById("product-old-price");
       const relatedContainer = document.getElementById("related-products");
 
-      // স্টক UI আপডেট ফাংশন
       function updateStockUI() {
         if (currentStock > 0) {
           stockInfo.innerText = `✅ In Stock (${currentStock})`;
@@ -204,14 +200,12 @@
         }
       }
 
-      // ডাটা ফিল আপডেট
       productImg.src = product.image || "";
       productTitle.innerText = product.name || "";
       productDesc.innerText = product.description || "";
       productPrice.innerText = product.price !== undefined ? `৳${product.price}` : "";
       productOldPrice.innerText = product.oldPrice ? `৳${product.oldPrice}` : "";
 
-      // এক্সট্রা ইমেজ স্লাইডার সেটআপ (যদি থাকে)
       const images = [product.image, ...(product.extraImgs || [])].filter(Boolean);
       let currentIndex = 0;
       extraImageSlider.innerHTML = "";
@@ -228,7 +222,6 @@
         extraImageSlider.appendChild(img);
       });
 
-      // অ্যারো বাটন কাজ (যদি থাকে)
       const leftArrow = document.querySelector(".arrow.left");
       const rightArrow = document.querySelector(".arrow.right");
       if (leftArrow && rightArrow && images.length > 0) {
@@ -248,7 +241,6 @@
 
       updateStockUI();
 
-      // Add to Cart বাটন ক্লিক
       addBtn.onclick = () => {
         if (currentStock <= 0) {
           alert("Sorry, this product is out of stock.");
@@ -262,7 +254,6 @@
 
         localStorage.setItem("cartData", JSON.stringify(cart));
 
-        // স্টক কমাও
         currentStock--;
         stockData[stockKey] = currentStock;
         localStorage.setItem("stockData", JSON.stringify(stockData));
@@ -271,7 +262,6 @@
         alert("Added to cart!");
       };
 
-      // রিভিউ লোড ও রেন্ডার
       const reviewsKey = "reviews_" + (product.id || product.name);
       let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
       function renderReviews() {
@@ -290,11 +280,13 @@
       }
       renderReviews();
 
-      // রিভিউ সাবমিশন
       document.getElementById("submit-review-btn").onclick = () => {
         const text = document.getElementById("review-text").value.trim();
         const rating = parseInt(document.getElementById("review-rating").value);
-        if (!text) return alert("Please write a review first.");
+        if (!text) {
+          alert("Please write a review first.");
+          return;
+        }
         reviews.push({ text, rating });
         localStorage.setItem(reviewsKey, JSON.stringify(reviews));
         renderReviews();
@@ -302,12 +294,11 @@
         alert("Thank you for your review!");
       };
 
-      // সম্পর্কিত প্রোডাক্ট দেখাও (id ভিন্ন)
       relatedContainer.innerHTML = "";
       products.forEach(prod => {
-        if (String(prod.id) === String(product.id)) return;
+        if (String(prod.id) === String(product.id) || String(prod._id) === String(product._id)) return;
         const a = document.createElement("a");
-        a.href = `product.html?id=${encodeURIComponent(prod.id)}`;
+        a.href = `product.html?id=${encodeURIComponent(prod._id || prod.id)}`;
         a.className = "related-product";
         a.innerHTML = `
           <img src="${prod.image}" alt="${prod.name}" />
@@ -324,7 +315,7 @@
       location.href = "index.html";
     });
 });
-
 </script>
+
 </body>
 </html>
