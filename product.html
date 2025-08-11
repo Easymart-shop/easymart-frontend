@@ -154,7 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
 
-  fetch("https://easymart-backend-4vh1.onrender.com/api/products")
+  fetch("https://api.easymartsbd.com/api/products")
+
     .then(res => {
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
