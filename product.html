@@ -143,26 +143,30 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Update cart count shown on "Go to Cart" button
   function updateGoCartCount() {
     const cartData = JSON.parse(localStorage.getItem('cartData')) || [];
-    document.getElementById("go-cart-count").innerText = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    const totalQuantity = cartData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    document.getElementById("go-cart-count").innerText = totalQuantity;
   }
   updateGoCartCount();
 
+  // Initialize stock data if not present in localStorage
   if (!localStorage.getItem('stockData')) {
     localStorage.setItem("stockData", JSON.stringify({}));
   }
   let stockData = JSON.parse(localStorage.getItem('stockData')) || {};
 
   fetch("https://api.easymartsbd.com/api/products")
-
     .then(res => {
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
     })
     .then(products => {
-      const product = products.find(p => String(p._id || p.id) === productId);
+      console.log("Product ID from URL:", productId);
+      console.log("Product IDs from API:", products.map(p => p._id || p.id));
 
+      const product = products.find(p => String(p._id || p.id) === productId);
       if (!product) {
         alert("Product not found.");
         location.href = "index.html";
@@ -172,11 +176,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const stockKey = product._id || product.id || product.name;
 
       if (stockData[stockKey] === undefined) {
-        stockData[stockKey] = 10;
+        stockData[stockKey] = 10; // Default stock quantity if not set
         localStorage.setItem("stockData", JSON.stringify(stockData));
       }
       let currentStock = stockData[stockKey];
 
+      // Get DOM elements
       const stockInfo = document.getElementById("stock-info");
       const addBtn = document.getElementById("add-to-cart-btn");
       const productImg = document.getElementById("product-img");
@@ -187,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const productOldPrice = document.getElementById("product-old-price");
       const relatedContainer = document.getElementById("related-products");
 
+      // Update stock display & button state
       function updateStockUI() {
         if (currentStock > 0) {
           stockInfo.innerText = `✅ In Stock (${currentStock})`;
@@ -201,12 +207,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Set product details on page
       productImg.src = product.image || "";
       productTitle.innerText = product.name || "";
       productDesc.innerText = product.description || "";
       productPrice.innerText = product.price !== undefined ? `৳${product.price}` : "";
       productOldPrice.innerText = product.oldPrice ? `৳${product.oldPrice}` : "";
 
+      // Extra images slider setup
       const images = [product.image, ...(product.extraImgs || [])].filter(Boolean);
       let currentIndex = 0;
       extraImageSlider.innerHTML = "";
@@ -223,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraImageSlider.appendChild(img);
       });
 
+      // Arrow navigation for slider
       const leftArrow = document.querySelector(".arrow.left");
       const rightArrow = document.querySelector(".arrow.right");
       if (leftArrow && rightArrow && images.length > 0) {
@@ -242,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateStockUI();
 
+      // Add to cart button click
       addBtn.onclick = () => {
         if (currentStock <= 0) {
           alert("Sorry, this product is out of stock.");
@@ -264,8 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Added to cart!");
       };
 
+      // Reviews section
       const reviewsKey = "reviews_" + (product._id || product.id || product.name);
       let reviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
+
       function renderReviews() {
         const container = document.getElementById("review-list");
         container.innerHTML = "";
@@ -276,7 +288,10 @@ document.addEventListener("DOMContentLoaded", () => {
         reviews.forEach(r => {
           const div = document.createElement("div");
           div.className = "review";
-          div.innerHTML = `<div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div><div>${r.text}</div>`;
+          div.innerHTML = `
+            <div class="review-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+            <div>${r.text}</div>
+          `;
           container.appendChild(div);
         });
       }
@@ -296,11 +311,13 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Thank you for your review!");
       };
 
+      // Related products
       relatedContainer.innerHTML = "";
       products.forEach(prod => {
         const prodId = prod._id || prod.id;
         const currentId = product._id || product.id;
-        if (String(prodId) === String(currentId)) return;
+        if (String(prodId) === String(currentId)) return; // skip current product
+
         const a = document.createElement("a");
         a.href = `product.html?id=${encodeURIComponent(prodId)}`;
         a.className = "related-product";
@@ -320,6 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
+
 
 </body>
 </html>
