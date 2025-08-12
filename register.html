@@ -21,8 +21,8 @@
   <form id="registrationForm" autocomplete="off">
     <h2>EasyMart - User Registration</h2>
 
-    <label for="firstName">Full Name</label>
-    <input type="text" id="firstName" name="firstName" required />
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" required />
 
     <label for="email">Email Address</label>
     <input type="email" id="email" name="email" required />
@@ -55,7 +55,7 @@
       msgEl.textContent = "";
       msgEl.className = "msg";
 
-      const name = document.getElementById("firstName").value.trim();
+      const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim().toLowerCase();
       const phone = document.getElementById("phone").value.trim();
       const password = document.getElementById("password").value;
