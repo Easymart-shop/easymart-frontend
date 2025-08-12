@@ -1,70 +1,79 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Account - EasyMart</title>
+  <meta charset="utf-8" />
+  <title>EasyMart - Account</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-    .container {
-      max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    .info {
-      text-align: left;
-      margin: 10px 0;
-      font-size: 18px;
-    }
-    button.logout {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button.logout:hover {
-      background: #c82333;
-    }
+    body{font-family:Arial;background:#f5f5f5;padding:20px}
+    .card{background:#fff;max-width:700px;margin:auto;padding:20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    h2{margin-top:0}
+    .row{margin:8px 0}
+    button{padding:8px 12px;border-radius:6px;border:none;background:#dc3545;color:#fff;cursor:pointer}
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <h2>Your Account Information</h2>
-    <div id="userInfo">
-      <!-- ইউজারের তথ্য এখানে দেখানো হবে -->
+  <div class="card" id="accountCard">
+    <h2>Account</h2>
+    <p id="status">Loading...</p>
+    <div id="userInfo" style="display:none;">
+      <div class="row"><strong>Name:</strong> <span id="uName"></span></div>
+      <div class="row"><strong>Email:</strong> <span id="uEmail"></span></div>
+      <div class="row"><strong>Phone:</strong> <span id="uPhone"></span></div>
+      <div class="row"><strong>Address:</strong> <span id="uAddress"></span></div>
+      <div style="margin-top:12px;"><button id="logoutBtn">Logout</button></div>
     </div>
-    <button class="logout" id="logoutBtn">Logout</button>
   </div>
 
   <script>
-    // লগইন ইউজারের তথ্য আনা
-    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const API_BASE = "http://localhost:5000"; // তোমার backend URL
 
-    if(!loggedInUser){
-      alert('You are not logged in!');
-      window.location.href = 'login.html';
-    } else {
-      const infoDiv = document.getElementById('userInfo');
-      infoDiv.innerHTML = `
-        <p class="info"><strong>Full Name:</strong> ${loggedInUser.name}</p>
-        <p class="info"><strong>Email:</strong> ${loggedInUser.email}</p>
-        <p class="info"><strong>Phone:</strong> ${loggedInUser.phone}</p>
-      `;
+    const statusEl = document.getElementById("status");
+    const userInfoEl = document.getElementById("userInfo");
+
+    async function loadAccount() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        statusEl.textContent = "Not logged in. Redirecting to login...";
+        setTimeout(() => window.location.href = "login.html", 1000);
+        return;
+      }
+
+      try {
+        const res = await fetch(API_BASE + "/api/auth/account", {  // ঠিক path
+          headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (!res.ok) {
+          // token invalid বা expired
+          localStorage.removeItem("token");
+          statusEl.textContent = "Session expired. Redirecting to login...";
+          setTimeout(() => window.location.href = "login.html", 1200);
+          return;
+        }
+
+        const user = await res.json();
+
+        document.getElementById("uName").textContent = user.name || "";
+        document.getElementById("uEmail").textContent = user.email || "";
+        document.getElementById("uPhone").textContent = user.phone || "";
+        document.getElementById("uAddress").textContent = user.address || "";
+
+        statusEl.style.display = "none";
+        userInfoEl.style.display = "block";
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Server error";
+      }
     }
 
-    // লগআউট ফাংশন
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('loggedInUser');
-      alert('You have logged out.');
-      window.location.href = 'login.html';
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
     });
-  </script>
 
+    loadAccount();
+  </script>
 </body>
 </html>

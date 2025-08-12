@@ -1,154 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EasyMart Registration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>EasyMart - Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
-    }
-    form {
-      background: #fff;
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-    }
-    label {
-      margin-top: 10px;
-      display: block;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #28a745;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #218838;
-    }
+    body { font-family: Arial, sans-serif; background:#f5f5f5; padding:20px; }
+    form { background:#fff; max-width:700px; margin:auto; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    h2 { text-align:center; margin-bottom:10px; }
+    label { display:block; margin-top:10px; font-weight:600; }
+    input, textarea { width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box; }
+    button { width:100%; padding:10px; background:#28a745; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer; margin-top:12px; }
+    button:hover { background:#218838; }
+    .msg { text-align:center; margin-top:12px; font-weight:600; }
+    .error { color:#c00; }
+    .success { color:#086; }
   </style>
 </head>
 <body>
-  <form id="registrationForm">
-    <h2>User Registration</h2>
+  <form id="registrationForm" autocomplete="off">
+    <h2>EasyMart - User Registration</h2>
 
     <label for="firstName">Full Name</label>
-    <input type="text" id="firstName" name="firstName" required>
+    <input type="text" id="firstName" name="firstName" required />
 
     <label for="email">Email Address</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email" required />
 
     <label for="phone">Phone Number</label>
-    <input type="tel" id="phone" name="phone" required>
+    <input type="tel" id="phone" name="phone" required />
 
     <label for="password">Password</label>
-    <input type="password" id="password" name="password" required>
+    <input type="password" id="password" name="password" required minlength="6" />
 
     <label for="confirmPassword">Confirm Password</label>
-    <input type="password" id="confirmPassword" name="confirmPassword" required>
-
-   
-    <label for="District">District</label>
-<input type="text" id="District" name="District" required>
-
-
-    <label for="upazila">Upazila/Thana</label>
-<input type="text" id="upazila" name="upazila" required>
-
-
-    <label for="postOfficewithpostcode">Post Office with post code</label>
-    <input type="text" id="postOfficewithpostcode" name="postOfficewithpostcode" required>
-
+    <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6" />
 
     <label for="address">Full Address</label>
-    <input type="text" id="address" name="address" required>
-
+    <textarea id="address" name="address" rows="3" required></textarea>
 
     <button type="submit" id="registerBtn">Register</button>
 
+    <p class="msg" id="message"></p>
   </form>
 
   <script>
-  
+    const API_BASE = "http://localhost:5000"; // তোমার backend URL এখানে বসাও
 
+    const form = document.getElementById("registrationForm");
+    const msgEl = document.getElementById("message");
 
-    const divisionSelect = document.getElementById("division");
-    const districtSelect = document.getElementById("district");
-    
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msgEl.textContent = "";
+      msgEl.className = "msg";
 
-    for (let division in divisions) {
-      const opt = document.createElement("option");
-      opt.value = division;
-      opt.textContent = division;
-      divisionSelect.appendChild(opt);
-    }
+      const name = document.getElementById("firstName").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const address = document.getElementById("address").value.trim();
 
-    divisionSelect.addEventListener("change", () => {
-      districtSelect.innerHTML = '<option value="">-- Select District --</option>';
-      
-      divisions[divisionSelect.value]?.forEach(d => {
-        const opt = document.createElement("option");
-        opt.value = d;
-        opt.textContent = d;
-        districtSelect.appendChild(opt);
-      });
+      // Simple validation
+      if (!name || !email || !phone || !password || !confirmPassword || !address) {
+        msgEl.textContent = "সব ফিল্ড পূরণ করো।";
+        msgEl.classList.add("error");
+        return;
+      }
+      if (password.length < 6) {
+        msgEl.textContent = "পাসওয়ার্ড কমপক্ষে 6 অক্ষর হওয়া উচিত।";
+        msgEl.classList.add("error");
+        return;
+      }
+      if (password !== confirmPassword) {
+        msgEl.textContent = "Password এবং Confirm Password মিলছে না।";
+        msgEl.classList.add("error");
+        return;
+      }
+
+      const payload = { name, email, phone, password, address };
+
+      try {
+        const res = await fetch(API_BASE + "/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msgEl.textContent = data.message || "Registration failed";
+          msgEl.classList.add("error");
+          return;
+        }
+
+        msgEl.textContent = data.message || "Registration successful";
+        msgEl.classList.add("success");
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        msgEl.textContent = "সার্ভারে সংযোগে সমস্যা। (Console দেখো)";
+        msgEl.classList.add("error");
+      }
     });
-
-    districtSelect.addEventListener("change", () => {
-        const opt = document.createElement("option");
-        opt.value = u;
-        opt.textContent = u;
-        upazilaSelect.appendChild(opt);
-      });
-    
-
-  const registerBtn = document.getElementById("registerBtn");
-  registerBtn.addEventListener("click", (e) => {
-    e.preventDefault();  // ফর্ম সাবমিট না হয়ে জাভাস্ক্রিপ্ট চলবে
-
-    const name = document.getElementById("firstName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
-
-    if (!name || !email || !phone || !password || !confirmPassword) {
-      alert("Please fill all fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Password and Confirm Password do not match!");
-      return;
-    }
-
-    // এখানে API কল বা অন্য লজিক যাবে
-    alert("Registration validation passed. এখন তুমি API কল করতে পারো।");
-  });
-
-
-
   </script>
 </body>
 </html>
