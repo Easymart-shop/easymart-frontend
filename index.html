@@ -14,153 +14,182 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
-          }
+      padding-top: 180px; /* Navbar + top header + news ticker accommodate */
+      padding-bottom: 200px; /* Footer height */
+    }
 
+    /* Top Header */
+    .top-header { 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      color: #550202;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      line-height: 1.3;
+      text-align: center;
+      padding: 2px 4px;
+      background: transparent;
+      z-index: 10000;
+    }
 
+    .top-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
 
-     .navbar {
-  background-color: #eae8e8;
-  color: rgb(10, 0, 0);
-  padding: 10px 10px; 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-position:fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 9999;
-  
-}
+    .top-header h5 {
+      font-size: 0.80rem;
+      font-weight: 400;
+      margin: 0;
+      color: #555555;
+      font-style: normal;
+    }
 
-body {
-  padding-top: 90px; /* navbar উচ্চতার সমান বা একটু বেশি */
+    @media (max-width: 600px) {
+      .top-header h1 { font-size: 1.5rem; }
+      .top-header h5 { font-size: 0.60rem; }
+    }
 
+    /* Navbar */
+    .navbar {
+      background-color: #eae8e8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: fixed;
+      top: 40px; /* below top-header */
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+      gap: 10px;
+      padding: 10px 0;
+    }
 
-}
+    .navbar .logo img {
+      height: 60px;
+      object-fit: contain;
+    }
 
+    .navbar .menu-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
 
-.logo img {
-  height: 60px;
-  object-fit: contain;
-  margin-top: 20px; /* নিচে নামানোর জন্য */
-}
+    .navbar .menu-right a {
+      text-decoration: none;
+      color: rgb(8,0,0);
+      font-size: 14px;
+      position: relative;
+      z-index: 10001;
+      padding: 6px 10px;
+    }
 
+    .navbar .menu-right a:hover { color: #ffcc00; }
 
-.navbar .search-box {
-  flex-grow: 1;
-  margin: 10px 0;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  order: 3; 
-}
+    .navbar .search-box {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
 
-.navbar input[type="text"] {
-  width: 90%;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-}
+    .navbar .search-box input[type="text"] {
+      width: 50%;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      background: rgb(246,242,242);
+      color: rgb(14,0,0);
+    }
 
-.navbar .menu-right {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+    .navbar .search-box button {
+      margin-left: 8px;
+      padding: 8px 12px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-.navbar .menu-right a {
-  margin-left: 15px;
-  text-decoration: none;
-  color: rgb(8, 0, 0);
-  font-size: 14px;
-  position: relative; /* নতুন যুক্ত করো */
-  z-index: 10001;
-}
+    .navbar .search-box button:hover {
+      background-color: #218838;
+    }
 
-.navbar .menu-right a:hover {
-  color: #ffcc00;
-}
+    @media (max-width: 768px) {
+      .navbar .search-box input[type="text"] { width: 80%; }
+    }
 
-@media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    /* News Ticker */
+    .news-ticker {
+      background: #fbfbfb;
+      color: #020000;
+      overflow: hidden;
+      position: fixed;
+      top: 140px; /* top-header + navbar */
+      left: 0;
+      width: 100%;
+      height: 44px;
+      line-height: 44px;
+      font-family: 'Segoe UI', sans-serif;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+      margin-bottom: 20px;
+    }
 
-  .navbar .menu-right {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
+    .news-ticker-title {
+      background: #f5f5f5;
+      color: rgb(6,0,0);
+      padding: 0 20px;
+      font-weight: 600;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      border-right: 2px solid rgb(8,0,0);
+      font-size: 15px;
+      white-space: nowrap;
+    }
 
-  .navbar .search-box {
-    order: 3;
-    width: 100%;
-  }
+    .ticker-wrap {
+      position: relative;
+      margin-left: 150px;
+      height: 100%;
+      overflow: hidden;
+    }
 
-  .navbar input[type="text"] {
-    width: 100%;
-  }
-}
+    .ticker-move {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: ticker 40s linear infinite;
+      font-size: 14px;
+    }
 
+    @keyframes ticker { 0% { transform: translateX(0%);} 100% { transform: translateX(-100%);} }
 
+    @media (max-width: 600px) {
+      .news-ticker { height: 36px; line-height: 36px; }
+      .news-ticker-title { font-size: 13px; padding: 0 12px; }
+      .ticker-wrap { margin-left: 110px; }
+      .ticker-move { font-size: 13px; }
+    }
 
-.top-header { 
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  color: #550202;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  user-select: none;
-  line-height: 1.3;
-  text-align: center;
-  padding: 2px 4px;
-  background: transparent;
-  z-index: 10000;
-}
-
-.top-header h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 0;
-}
-
-.top-header h5 {
-  font-size: 0.80rem;
-  font-weight: 400;
-  margin: 0;
-  color: #555555;
-  font-style: normal;
-}
-
-/* ✅ মোবাইল ডিভাইসের জন্য ফন্ট ছোট করো */
-@media (max-width: 600px) {
-  .top-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .top-header h5 {
-    font-size: 0.60rem;
-  }
-}
-
-
-
-@media (min-width: 769px) {
-  .navbar input[type="text"] {
-    width: 500px;
-  }
-} 
-
+    /* Slider */
     .slider {
       width: 100%;
       height: 300px;
       position: relative;
       overflow: hidden;
-      margin: 0px auto;
+      margin: 10px auto;
     }
 
     .slider img.slide {
@@ -172,63 +201,40 @@ body {
       transition: opacity 1s ease-in-out;
     }
 
-    .slider img.slide.active {
-      opacity: 1;
-      z-index: 1;
+    .slider img.slide.active { opacity: 1; z-index: 1; }
+
+    @media (max-width: 600px) {
+      .slider { height: 200px; }
     }
 
-    .categories {
-      display: flex;
-      justify-content: center;
-      background-color: #fff;
-      padding: 10px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .categories div {
-  background-color: #eee;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  flex: 1 1 120px;
-  max-width: 150px;
-}
-
-
-    .categories div:hover {
-      background-color: #ddd;
-    }
-
+    /* Product Section */
     .product-section {
       padding: 20px;
+      margin-top: 10px;
     }
 
-    .product-section h2 {
-      margin-bottom: 15px;
-    }
+    .product-section h2 { margin-bottom: 15px; }
 
-   .products {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 5px;
-  justify-content: center;
-}
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+      gap: 10px;
+      justify-items: center;
+    }
 
     .product {
-  background-color: white;
-  padding: 5px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  text-align: center;
-  cursor: pointer;
-  flex: 1 1 180px;  /* Desktop view */
-  max-width: 100px;
-  margin-bottom: 1px;
-}
-
+      background-color: white;
+      padding: 5px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      max-width: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
     .product img {
       width: 100%;
@@ -237,16 +243,8 @@ body {
       border-radius: 5px;
     }
 
-    .product h4 {
-  margin: 5px 0 3px;
-  font-size: 14px;
-}
-
-    .product p {
-  font-size: 13px;
-  margin: 2px 0;
-}
-
+    .product h4 { margin: 5px 0 3px; font-size: 14px; }
+    .product p { font-size: 13px; margin: 2px 0; }
     .product button {
       margin-top: 5px;
       padding: 4px 8px;
@@ -255,19 +253,11 @@ body {
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      pointer-events: auto;
       font-size: 13px;
     }
 
-    .product button:hover {
-      background-color: #218838;
-    }
-
-    .old-price {
-      text-decoration: line-through;
-      color: #888;
-      margin-right: 6px;
-    }
+    .product button:hover { background-color: #218838; }
+    .old-price { text-decoration: line-through; color: #888; margin-right: 6px; }
 
     .cart-count {
       background: red;
@@ -277,52 +267,76 @@ body {
       font-size: 12px;
       vertical-align: top;
     }
+
+    /* Footer */
+    .top-footer {
+      background-color: white;
+      color: black;
+      padding: 30px 20px;
+      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+      margin-top: 40px;
+    }
+
+    .top-footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo img {
+      max-width: 130px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .footer-details { font-size: 14px; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .top-footer-content { flex-direction: column; text-align: center; }
+      .footer-logo { margin-bottom: 10px; }
+    }
+
+    footer { background-color: black; color: white; text-align: center; padding: 20px; }
+
   </style>
 </head>
 <body>
 
- 
-
+  <!-- Top Header -->
+  <div class="top-header">
+    <h1>EasyMart</h1>
+    <h5>Online Shopping Made Easy</h5>
+  </div>
 
   <!-- Navbar -->
   <div class="navbar">
     <div class="logo">
-  <img src="https://i.postimg.cc/wBXp84Cy/Whats-App-Image-2025-07-31-at-15-21-11-3b9eeb17.jpg" alt="EasyMart Logo">
-</div>
-
-<div class="top-header">
-  <h1>EasyMart Shopping</h1>
-  <h5>Naogaon Sadar, Naogaon</h5>
-  <h5>www.easymartsbd.com</h5>
-</div>
-
-
-    <div class="search-box">
-  <input type="text" id="searchInput" placeholder="Search in EasyMart" />
-  <button id="searchBtn">Search</button>
-</div>
-
+      <img src="https://i.postimg.cc/wBXp84Cy/Whats-App-Image-2025-07-31-at-15-21-11-3b9eeb17.jpg" alt="EasyMart Logo">
+    </div>
     <div class="menu-right">
-  <a href="cart.html">Checkout Cart (<span id="cart-count">0</span>)</a>
-  <a href="account.html">Your Account</a>
-  <a href="login.html">Login</a>
-  <a href="register.html">Registration</a>
-</div>
-
-
-
-<!-- ✅ Smart & Responsive News Ticker Start -->
-<div class="news-ticker">
-  <div class="news-ticker-title">💸 Discount News</div>
-  <div class="ticker-wrap">
-    <div class="ticker-move">
-      📢 EasyMart-এ শুরু হয়েছে বিশাল ছাড়! 🛍️ আজ রাত ১২টা পর্যন্ত ৭০% পর্যন্ত ছাড়! | 🚚 ফ্রি হোম ডেলিভারি ঢাকার মধ্যে! | ⭐ নতুন প্রোডাক্ট যোগ হয়েছে — এখনই ঘুরে দেখুন!
+      <a href="cart.html">Checkout Cart (<span id="cart-count">0</span>)</a>
+      <a href="account.html">Your Account</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registration</a>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search in EasyMart" />
+      <button id="searchBtn">Search</button>
     </div>
   </div>
-</div>
 
-<div id="product-list-container"></div>
-
+  <!-- News Ticker -->
+  <div class="news-ticker">
+    <div class="news-ticker-title">💸 Discount News</div>
+    <div class="ticker-wrap">
+      <div class="ticker-move">
+        📢 EasyMart-এ শুরু হয়েছে বিশাল ছাড়! 🛍️ আজ রাত ১২টা পর্যন্ত ৭০% পর্যন্ত ছাড়! | 🚚 ফ্রি হোম ডেলিভারি ঢাকার মধ্যে! | ⭐ নতুন প্রোডাক্ট যোগ হয়েছে — এখনই ঘুরে দেখুন!
+      </div>
+    </div>
+  </div>
 
   <!-- Slider -->
   <div class="slider">
@@ -332,376 +346,110 @@ body {
     <img class="slide" src="https://i.postimg.cc/J4rjH0F5/7992328fd79a2ce9c8d41ff7fc53984d.webp" alt="Slide 4" />
   </div>
 
-  <!-- Categories -->
-  <div class="categories">
-    <a href="electronics.html"><div>Electronics</div></a>
-    <a href="grocery.html"><div>Grocery</div></a>
-    <a href="cosmetics.html"><div>Cosmetics</div></a>
-    <a href="medicine.html"><div>Medicine</div></a>
-    <a href="others.html"><div>Others</div></a>
-  </div>
+  <!-- Latest Products -->
+  <section class="product-section">
+    <h2>Latest Products</h2>
+    <div class="products" id="product-list-container"></div>
+  </section>
 
-
-<!-- এই অংশ slider, news alert, menu bar এর নিচে থাকবে -->
-<section class="product-section">
-  <h2>Latest Products</h2>
-  <div class="products" id="product-list-container"></div>
-</section>
-
-
-  <div class="products">
-</div>
-
-  
-
-</div>
-
-
-<script>
-  // কার্ট ডেটা লোড
-  let cartData = JSON.parse(localStorage.getItem('cartData')) || [];
-  let cartCount = cartData.reduce((total, item) => total + item.quantity, 0);
-  document.getElementById("cart-count").innerText = cartCount;
-
-  // স্লাইডার ফাংশন (যদি থাকে)
-  const slides = document.querySelectorAll('.slider img.slide');
-  let current = 0;
-  if(slides.length > 0) {
-    setInterval(() => {
-      slides[current].classList.remove('active');
-      current = (current + 1) % slides.length;
-      slides[current].classList.add('active');
-    }, 3000);
-  }
-
-  // সার্চ ফাংশনালিটি
-  document.getElementById("searchInput").addEventListener("input", function () {
-    const keyword = this.value.toLowerCase();
-    const products = document.querySelectorAll(".product");
-
-    let firstMatchFound = false;
-
-    products.forEach(product => {
-      const name = product.querySelector("h4").innerText.toLowerCase();
-      const isMatch = name.includes(keyword);
-      product.style.display = isMatch ? "block" : "none";
-
-      if (isMatch && !firstMatchFound) {
-        product.scrollIntoView({ behavior: "smooth", block: "center" });
-        firstMatchFound = true;
-      }
-    });
-  });
-
-  // স্টক ডেটা লোড
-  const stockData = JSON.parse(localStorage.getItem("stockData")) || {};
-
-  function updateStockAndCartButtons() {
-    document.querySelectorAll(".product").forEach(productDiv => {
-      const name = productDiv.querySelector("h4").innerText.trim();
-      const stockInfo = productDiv.querySelector(".stock-info");
-      const addBtn = productDiv.querySelector("button.add-to-cart-btn");
-
-      if (stockData[name] !== undefined) {
-        const stock = stockData[name];
-        if (stock > 0) {
-          stockInfo.innerText = `In Stock (${stock})`;
-          stockInfo.style.color = "green";
-          addBtn.disabled = false;
-          addBtn.style.opacity = "1";
-        } else {
-          stockInfo.innerText = "Out of Stock";
-          stockInfo.style.color = "red";
-          addBtn.disabled = true;
-          addBtn.style.opacity = "0.6";
-        }
-      }
-    });
-  }
-
-  // কার্ট বাটন ক্লিক ইভেন্ট
-  function addCartButtonListeners() {
-    document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const productDiv = btn.closest('.product');
-        const name = productDiv.querySelector('h4').innerText;
-
-        const priceText = productDiv.querySelector("p").innerText;
-        const priceParts = priceText.split("৳");
-        const priceString = priceParts[priceParts.length - 1].trim();
-        const price = parseFloat(priceString);
-        const img = productDiv.querySelector('img').src;
-
-        const existing = cartData.find(p => p.name === name);
-        if (existing) {
-          existing.quantity += 1;
-        } else {
-          cartData.push({ name, price, quantity: 1, img });
-        }
-
-        localStorage.setItem('cartData', JSON.stringify(cartData));
-        cartCount = cartData.reduce((total, item) => total + item.quantity, 0);
-        document.getElementById("cart-count").innerText = cartCount;
-
-        alert("Product added to cart!");
-      });
-    });
-  }
-
-  // প্রোডাক্ট লোড করে দেখানো
-  const container = document.querySelector(".products");
-  container.innerHTML = "";
-
-  fetch("https://api.easymartsbd.com/api/products")
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
-    })
-    .then(data => {
-      container.innerHTML = "";
-      data.forEach(product => {
-        const productHTML = `
-          <div class="product">
-            <a href="product.html?id=${encodeURIComponent(product._id || product.id)}" style="text-decoration:none;color:inherit;">
-              <img src="${product.image}" alt="${product.name}" />
-              <h4>${product.name}</h4>
-              <p>
-                <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
-                ৳${product.price}
-              </p>
-              <p class="stock-info" style="font-weight:bold;color:${product.stock > 0 ? 'green' : 'red'};">
-                ${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
-              </p>
-              <div class="stars" style="color:gold;font-size:16px;margin-bottom:5px;">★★★★☆</div>
-            </a>
-            <button class="add-to-cart-btn" type="button" ${product.stock <= 0 ? 'disabled style="opacity:0.6;"' : ''}>Add to Cart</button>
-          </div>
-        `;
-        container.insertAdjacentHTML('beforeend', productHTML);
-      });
-
-      updateStockAndCartButtons();
-      addCartButtonListeners();
-    })
-    .catch(err => {
-      console.error("Error fetching products:", err);
-      container.innerHTML = "<p style='color:red;'>Failed to load products.</p>";
-    });
-</script>
-
-
-
-
-
-
-<!-- ✅ New Top Footer Section (White box like navbar) -->
-<div class="top-footer">
-  <div class="top-footer-content">
-    <div class="footer-logo">
-      <img src="https://i.postimg.cc/853WLQM7/Easymart-logo.jpg" alt="EasyMart Logo">
-    </div>
-    <div class="footer-details">
-      <p><strong>Address:</strong> Naogaon sadar Naogaon, Rajshahi, Bangladesh</p>
-      <p><strong>Phone:</strong> +880 1855920606</p>
-      <p><strong>Email:</strong> support@easymartsbd.com</p>
-      <p><strong>Website:</strong> www.easymartsbd.com</p>
-      <p><strong>Founder & CEO:</strong> MD MEHEDI HASAN </p>
-      <p><strong>Facebook:</strong> HM MEHEDI</p>
-      
+  <!-- Footer -->
+  <div class="top-footer">
+    <div class="top-footer-content">
+      <div class="footer-logo">
+        <img src="https://i.postimg.cc/853WLQM7/Easymart-logo.jpg" alt="EasyMart Logo">
+      </div>
+      <div class="footer-details">
+        <p><strong>Address:</strong> Naogaon sadar Naogaon, Rajshahi, Bangladesh</p>
+        <p><strong>Phone:</strong> +880 1855920606</p>
+        <p><strong>Email:</strong> support@easymartsbd.com</p>
+        <p><strong>Website:</strong> www.easymartsbd.com</p>
+        <p><strong>Founder & CEO:</strong> MD MEHEDI HASAN </p>
+        <p><strong>Facebook:</strong> HM MEHEDI</p>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ✅ Existing Black Footer (Do not touch this as per your request) -->
-<footer style="background-color: black; color: white; text-align: center; padding: 20px;">
-  <p>© 2025 EasyMart. All rights reserved.</p>
-</footer>
+  <footer>
+    <p>© 2025 EasyMart. All rights reserved.</p>
+  </footer>
 
-<!-- ✅ Style (Put inside <style> OR your existing <style> block in <head>) -->
-<style>
-  .top-footer {
-    background-color: white;
-    color: black;
-    padding: 30px 20px;
-    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
-  }
+  <!-- Scripts -->
+  <script>
+    // Cart data
+    let cartData = JSON.parse(localStorage.getItem('cartData')) || [];
+    document.getElementById("cart-count").innerText = cartData.reduce((t,i)=>t+i.quantity,0);
 
-  .top-footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .footer-logo img {
-    max-width: 130px;
-    height: auto;
-    margin-bottom: 15px;
-  }
-
-  .footer-details {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  @media (max-width: 768px) {
-    .top-footer-content {
-      flex-direction: column;
-      text-align: center;
+    // Slider
+    const slides = document.querySelectorAll('.slider img.slide');
+    let current = 0;
+    if(slides.length>0) {
+      setInterval(()=>{
+        slides[current].classList.remove('active');
+        current = (current+1)%slides.length;
+        slides[current].classList.add('active');
+      },3000);
     }
 
-    .footer-logo {
-      margin-bottom: 10px;
-    }
-  }
+    // Fetch products from backend
+    const container = document.getElementById("product-list-container");
+    fetch("https://api.easymartsbd.com/api/products")
+      .then(res=>{ if(!res.ok) throw new Error("Failed to fetch products"); return res.json();})
+      .then(data=>{
+        container.innerHTML="";
+        data.forEach(product=>{
+          const productHTML = `
+            <div class="product">
+              <a href="product.html?id=${encodeURIComponent(product._id || product.id)}" style="text-decoration:none;color:inherit;">
+                <img src="${product.image}" alt="${product.name}" />
+                <h4>${product.name}</h4>
+                <p>
+                  <span class="old-price">${product.oldPrice ? '৳'+product.oldPrice : ''}</span>
+                  ৳${product.price}
+                </p>
+                <p class="stock-info" style="font-weight:bold;color:${product.stock>0?'green':'red'};">
+                  ${product.stock>0?`In Stock (${product.stock})`:"Out of Stock"}
+                </p>
+              </a>
+              <button class="add-to-cart-btn" type="button" ${product.stock<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
+            </div>`;
+          container.insertAdjacentHTML('beforeend',productHTML);
+        });
+        addCartButtonListeners();
+      })
+      .catch(err=>{ console.error("Error fetching products:",err); container.innerHTML="<p style='color:red;'>Failed to load products.</p>"; });
 
-
-.search-box input[type="text"] {
-  background: rgb(246, 242, 242);
-  color: rgb(14, 0, 0);
-  border-radius: 4px;
-  padding: 8px;
-  border: none;
-  width: 40%;
-}
-
-.search-box button {
-  margin-left: 8px;
-  padding: 8px 12px;
-  border: none;
-  background-color: #28a745;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.search-box button:hover {
-  background-color: #218838;
-}
-
-
-
-@media (max-width: 600px) {
-  .categories div {
-    flex: 1 1 45%;
-    max-width: 48%;
-  }
-}
-
-
-@media (max-width: 600px) {
-  .product {
-    flex: 1 1 90%;
-    max-width: 90%;
-    margin: 5px auto;
-  }
-}
-
-
-
-@media (max-width: 600px) {
-  .categories div {
-    flex: 1 1 45%;
-    max-width: 48%;
-  }
-}
-
-
-
-  .news-ticker {
-
-    background: #fbfbfb;
-    color: #020000;
-    overflow: hidden;
-    position: relative;
-    height: 44px;
-    line-height: 44px;
-    font-family: 'Segoe UI', sans-serif;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-
-    /* ✅ Gap between ticker and slider */
-    margin-bottom: 20px;
-  }
-
-  .news-ticker-title {
-    background: #f5f5f5;
-    color: rgb(6, 0, 0);
-    padding: 0 20px;
-    font-weight: 600;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    z-index: 2;
-    border-right: 2px solid rgb(8, 0, 0);
-    font-size: 15px;
-    white-space: nowrap;
-  }
-
-  .ticker-wrap {
-    position: relative;
-    margin-left: 150px;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .ticker-move {
-    display: inline-block;
-    white-space: nowrap;
-    padding-left: 100%;
-    animation: ticker 40s linear infinite;
-    font-size: 14px;
-  }
-
-  @keyframes ticker {
-    0% {
-      transform: translateX(0%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
-  }
-
-  /* 🔧 Responsive Design */
-  @media (max-width: 600px) {
-    .news-ticker {
-      height: 36px;
-      line-height: 36px;
+    // Add to cart
+    function addCartButtonListeners() {
+      document.querySelectorAll(".add-to-cart-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+          const productDiv = btn.closest('.product');
+          const name = productDiv.querySelector('h4').innerText;
+          const priceText = productDiv.querySelector("p").innerText;
+          const price = parseFloat(priceText.replace(/[^\d.]/g,''));
+          const img = productDiv.querySelector('img').src;
+          const existing = cartData.find(p=>p.name===name);
+          if(existing) existing.quantity+=1;
+          else cartData.push({name,price,quantity:1,img});
+          localStorage.setItem('cartData',JSON.stringify(cartData));
+          document.getElementById("cart-count").innerText=cartData.reduce((t,i)=>t+i.quantity,0);
+          alert("Product added to cart!");
+        });
+      });
     }
 
-    .news-ticker-title {
-      font-size: 13px;
-      padding: 0 12px;
-    }
+    // Search
+    document.getElementById("searchInput").addEventListener("input",function(){
+      const keyword = this.value.toLowerCase();
+      const products = document.querySelectorAll(".product");
+      let firstMatch=false;
+      products.forEach(product=>{
+        const name = product.querySelector("h4").innerText.toLowerCase();
+        const isMatch = name.includes(keyword);
+        product.style.display=isMatch?"block":"none";
+        if(isMatch && !firstMatch){ product.scrollIntoView({behavior:"smooth",block:"center"}); firstMatch=true; }
+      });
+    });
+  </script>
 
-    .ticker-wrap {
-      margin-left: 110px;
-    }
-
-    .ticker-move {
-      font-size: 13px;
-    }
-  }
-
-#registration-section input {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-#registration-section button:hover {
-  background-color: #218838;
-}
-
-
-</style>
 </body>
 </html>
-
-
-
-
