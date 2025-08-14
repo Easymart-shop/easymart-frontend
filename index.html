@@ -43,8 +43,8 @@
     /* Product Section */
     .product-section { padding: 20px; margin-top: 10px; }
     .product-section h2 { margin-bottom: 15px; }
-    .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 10px; justify-items: center; }
-    .product { background-color: white; padding: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; cursor: pointer; width: 100%; max-width: 180px; display: flex; flex-direction: column; justify-content: space-between; }
+    .products { display: grid; gap: 10px; justify-items: center; }
+    .product { background-color: white; padding: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; cursor: pointer; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .product img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
     .product h4 { margin: 5px 0 3px; font-size: 14px; }
     .product p { font-size: 13px; margin: 2px 0; }
@@ -59,6 +59,10 @@
     .footer-details { font-size: 14px; line-height: 1.6; }
     footer { background-color: black; color: white; text-align: center; padding: 20px; }
 
+    /* Responsive Grid */
+    @media (min-width: 1200px) { .products { grid-template-columns: repeat(6, 1fr); } }
+    @media (max-width: 1199px) and (min-width: 768px) { .products { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 767px) { .products { grid-template-columns: repeat(2, 1fr); } }
   </style>
 </head>
 <body>

@@ -146,7 +146,6 @@
 <script>
 (async function(){
   const API_URL = "https://api.easymartsbd.com/api/products";
-
   const qs = (s,el=document)=>el.querySelector(s);
   const qsa = (s,el=document)=>[...el.querySelectorAll(s)];
   const fmt = n => (n===undefined||n===null||isNaN(Number(n)))?"":`৳${Number(n)}`;
@@ -312,6 +311,16 @@
     if(!prod){toast("No products found");return;}
     renderProduct(prod);
     renderRelated(PRODUCTS,getStableId(prod));
+
+    // Handle browser back/forward navigation
+    window.onpopstate = ()=>{
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+      const prod = PRODUCTS.find(p=>getStableId(p)===id) || PRODUCTS[0];
+      renderProduct(prod);
+      renderRelated(PRODUCTS,getStableId(prod));
+    };
+
   }catch(err){console.error(err);toast("Error loading data");}
 
 })();
