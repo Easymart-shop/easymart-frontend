@@ -1,328 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Product Details - EasyMart</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{
-      --bg:#f5f5f5; --card:#fff; --text:#111; --muted:#666; --brand:#088a2d;
-      --danger:#c62828; --shadow:0 2px 8px rgba(0,0,0,.08); --radius:12px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    a{text-decoration:none;color:inherit}
-
-    .container{max-width:1100px;margin:auto;padding:16px}
-    .topbar{
-      position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.8);
-      backdrop-filter:blur(6px);border-bottom:1px solid #eee
-    }
-    .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
-    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow)}
-    .btn-brand{background:var(--brand);color:#fff}
-    .btn-ghost{background:#fff}
-    .btn:hover{opacity:.95}
-
-    .product-wrap{
-      display:grid;grid-template-columns:420px 1fr;gap:20px;
-      background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
-    }
-    @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
-    .media{
-      position:relative;display:flex;flex-direction:column;gap:10px
-    }
-    .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
-    .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
-    .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
-    .thumbs img.selected{border-color:var(--brand)}
-    .arrow{
-      position:absolute;top:50%;transform:translateY(-50%);user-select:none;cursor:pointer;
-      background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;
-    }
-    .arrow.left{left:10px}
-    .arrow.right{right:10px}
-
-    .info h1{margin:0 0 6px 0;font-size:24px}
-    .desc{color:var(--muted);line-height:1.5}
-    .price-row{margin-top:10px;font-size:20px;display:flex;align-items:center;gap:10px}
-    .old-price{text-decoration:line-through;color:var(--muted)}
-    .stock{margin-top:8px;font-weight:700}
-    .stock.ok{color:var(--brand)}
-    .stock.bad{color:var(--danger)}
-    .sold{margin-top:6px;font-weight:700;color:orange} /* Sold count */
-    .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
-    .linklike{font-weight:700;color:var(--brand);text-decoration:underline}
-
-    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-top:16px}
-
-    /* Reviews */
-    .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
-    .stars{color:#f5a623}
-
-    /* Related grid */
-    .related-grid{
-      display:grid;gap:12px;margin-top:10px
-    }
-    @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
-    @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
-    @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
-    @media(min-width:576px) and (max-width:767px){.related-grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:575px){.related-grid{grid-template-columns:repeat(2,1fr)}}
-
-    .rel-card{
-      background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);
-      padding:8px;text-align:center;transition:transform .18s ease
-    }
-    .rel-card:hover{transform:translateY(-2px)}
-    .rel-card img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#fafafa}
-    .rel-title{font-size:14px;margin:8px 0 4px 0}
-    .rel-price{font-size:14px}
-  </style>
+<meta charset="UTF-8">
+<title>Product Details - EasyMart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#f5f5f5;--card:#fff;--text:#111;--muted:#666;--brand:#088a2d;--danger:#c62828;--shadow:0 2px 8px rgba(0,0,0,.08);--radius:12px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  a{text-decoration:none;color:inherit}
+  .container{max-width:1100px;margin:auto;padding:16px}
+  .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border-bottom:1px solid #eee}
+  .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow);cursor:pointer}
+  .btn-brand{background:var(--brand);color:#fff}
+  .btn-ghost{background:#fff}
+  .btn:hover{opacity:.95}
+  .product-wrap{display:grid;grid-template-columns:420px 1fr;gap:20px;background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
+  .media{position:relative;display:flex;flex-direction:column;gap:10px}
+  .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
+  .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
+  .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
+  .thumbs img.selected{border-color:var(--brand)}
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);user-select:none;cursor:pointer;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:36px;height:36px;display:grid;place-items:center}
+  .arrow.left{left:10px}
+  .arrow.right{right:10px}
+  .info h1{margin:0 0 6px 0;font-size:24px}
+  .desc{color:var(--muted);line-height:1.5}
+  .price-row{margin-top:10px;font-size:20px;display:flex;align-items:center;gap:10px}
+  .old-price{text-decoration:line-through;color:var(--muted)}
+  .stock{margin-top:8px;font-weight:700}
+  .stock.ok{color:var(--brand)}
+  .stock.bad{color:var(--danger)}
+  .sold{margin-top:6px;font-weight:700;color:orange}
+  .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .linklike{font-weight:700;color:var(--brand);text-decoration:underline}
+  .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-top:16px}
+  .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
+  .stars{color:#f5a623}
+  .related-grid{display:grid;gap:12px;margin-top:10px}
+  @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
+  @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
+  @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
+  @media(min-width:576px) and (max-width:767px){.related-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:575px){.related-grid{grid-template-columns:repeat(2,1fr)}}
+  .rel-card{background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);padding:8px;text-align:center;transition:transform .18s ease}
+  .rel-card:hover{transform:translateY(-2px)}
+  .rel-card img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#fafafa}
+  .rel-title{font-size:14px;margin:8px 0 4px 0}
+  .rel-price{font-size:14px}
+</style>
 </head>
 <body>
-  <!-- Top bar -->
-  <div class="topbar">
-    <div class="topbar-inner container">
-      <a class="btn btn-brand" href="index.html">🔙 Continue Shopping</a>
-      <a class="btn btn-ghost" href="cart.html">🛒 Go to Cart (<span id="go-cart-count">0</span>)</a>
+<div class="topbar">
+  <div class="topbar-inner container">
+    <a class="btn btn-brand" href="index.html">🔙 Continue Shopping</a>
+    <a class="btn btn-ghost" href="cart.html">🛒 Go to Cart (<span id="go-cart-count">0</span>)</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="product-wrap">
+    <div class="media">
+      <img id="product-img" class="main-img" src="" alt="Product"/>
+      <span class="arrow left" title="Prev">‹</span>
+      <span class="arrow right" title="Next">›</span>
+      <div id="thumbs" class="thumbs"></div>
+    </div>
+    <div class="info">
+      <h1 id="product-title"></h1>
+      <p id="product-description" class="desc"></p>
+      <div class="price-row">
+        <span id="product-old-price" class="old-price"></span>
+        <span id="product-price"></span>
+      </div>
+      <div id="stock-info" class="stock"></div>
+      <div id="sold-info" class="sold"></div>
+      <div class="cta">
+        <button id="add-to-cart-btn" class="btn btn-brand">Add to Cart</button>
+        <a href="cart.html" class="btn btn-ghost">Go to Cart</a>
+        <a href="index.html" class="linklike">Continue shopping</a>
+      </div>
     </div>
   </div>
 
-  <div class="container">
-    <!-- Product -->
-    <div class="product-wrap">
-      <div class="media">
-        <img id="product-img" class="main-img" src="" alt="Product"/>
-        <span class="arrow left" title="Prev">‹</span>
-        <span class="arrow right" title="Next">›</span>
-        <div id="thumbs" class="thumbs"></div>
-      </div>
-
-      <div class="info">
-        <h1 id="product-title"></h1>
-        <p id="product-description" class="desc"></p>
-        <div class="price-row">
-          <span id="product-old-price" class="old-price"></span>
-          <span id="product-price"></span>
-        </div>
-        <div id="stock-info" class="stock"></div>
-        <div id="sold-info" class="sold"></div> <!-- sold count -->
-
-        <div class="cta">
-          <button id="add-to-cart-btn" class="btn btn-brand">Add to Cart</button>
-          <a href="cart.html" class="btn btn-ghost">Go to Cart</a>
-          <a href="index.html" class="linklike">Continue shopping</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reviews -->
-    <div class="card">
-      <h3 style="margin-top:0">Customer Reviews</h3>
-      <div id="review-list"></div>
-      <textarea id="review-text" rows="3" style="width:100%;border-radius:8px;padding:8px;border:1px solid #ddd" placeholder="Write your review..."></textarea>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-        <label>Rating:
-          <select id="review-rating">
-            <option value="1">★☆☆☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="4">★★★★☆</option>
-            <option value="5">★★★★★</option>
-          </select>
-        </label>
-        <button id="submit-review-btn" class="btn btn-ghost">Submit Review</button>
-      </div>
-    </div>
-
-    <!-- Related -->
-    <div class="card">
-      <h3 style="margin-top:0">Other Products</h3>
-      <div id="related-products" class="related-grid"></div>
+  <div class="card">
+    <h3 style="margin-top:0">Customer Reviews</h3>
+    <div id="review-list"></div>
+    <textarea id="review-text" rows="3" style="width:100%;border-radius:8px;padding:8px;border:1px solid #ddd" placeholder="Write your review..."></textarea>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+      <label>Rating:
+        <select id="review-rating">
+          <option value="1">★☆☆☆☆</option>
+          <option value="2">★★☆☆☆</option>
+          <option value="3">★★★☆☆</option>
+          <option value="4">★★★★☆</option>
+          <option value="5">★★★★★</option>
+        </select>
+      </label>
+      <button id="submit-review-btn" class="btn btn-ghost">Submit Review</button>
     </div>
   </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Other Products</h3>
+    <div id="related-products" class="related-grid"></div>
+  </div>
+</div>
 
 <script>
-(async function(){
-  const API_URL = "https://api.easymartsbd.com/api/products";
-  const qs = (s,el=document)=>el.querySelector(s);
-  const qsa = (s,el=document)=>[...el.querySelectorAll(s)];
-  const fmt = n => (n===undefined||n===null||isNaN(Number(n)))?"":`৳${Number(n)}`;
+(async()=>{
+const API_URL="https://api.easymartsbd.com/api/products";
+const qs=(s,el=document)=>el.querySelector(s),qsa=(s,el=document)=>[...el.querySelectorAll(s)];
+const fmt=n=>(n==null||isNaN(Number(n)))?"":`৳${Number(n)}`;
 
-  // Cart
-  const updateGoCartCount = ()=>{
-    const cart = JSON.parse(localStorage.getItem("cartData"))||[];
-    qs("#go-cart-count").textContent = cart.reduce((s,i)=>s+(i.quantity||0),0);
-  };
-  updateGoCartCount();
-  window.addEventListener("storage", e=>{ if(e.key==="cartData") updateGoCartCount(); });
+const updateGoCartCount=()=>{const cart=JSON.parse(localStorage.getItem("cartData"))||[];qs("#go-cart-count").textContent=cart.reduce((s,i)=>s+(i.quantity||0),0);}
+updateGoCartCount();
+if(!localStorage.getItem("stockData"))localStorage.setItem("stockData",JSON.stringify({}));
+if(!localStorage.getItem("soldData"))localStorage.setItem("soldData",JSON.stringify({}));
 
-  if(!localStorage.getItem("stockData")) localStorage.setItem("stockData",JSON.stringify({}));
-  if(!localStorage.getItem("soldData")) localStorage.setItem("soldData",JSON.stringify({}));
+const params=new URLSearchParams(location.search);
+let urlId=params.get("id");
+let PRODUCTS=[],PRODUCT=null,IMGS=[],currentIndex=0;
 
-  const params = new URLSearchParams(location.search);
-  let urlId = params.get("id");
+const imgEl=qs("#product-img"),thumbs=qs("#thumbs");
+const leftArrow=qs(".arrow.left"),rightArrow=qs(".arrow.right");
+const titleEl=qs("#product-title"),descEl=qs("#product-description");
+const priceEl=qs("#product-price"),oldPriceEl=qs("#product-old-price");
+const stockEl=qs("#stock-info"),soldEl=qs("#sold-info");
+const addBtn=qs("#add-to-cart-btn"),relatedGrid=qs("#related-products");
 
-  let PRODUCTS = [];
-  let PRODUCT = null;
-  let IMGS = [];
-  let currentIndex = 0;
+const getStableId=p=>String(p && (p._id ?? p.id ?? p.name ?? ""));
+function loadImages(images){IMGS=images.filter(Boolean);currentIndex=0;imgEl.src=IMGS[0]||"";thumbs.innerHTML="";IMGS.forEach((src,i)=>{const t=document.createElement("img");t.src=src;if(i===0)t.classList.add("selected");t.onclick=()=>{currentIndex=i;imgEl.src=src;qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));t.classList.add("selected");};thumbs.appendChild(t);});}
+function setStockUI(prod){const stockData=JSON.parse(localStorage.getItem("stockData"))||{};const soldData=JSON.parse(localStorage.getItem("soldData"))||{};const key=getStableId(prod);if(stockData[key]===undefined)stockData[key]=10;if(soldData[key]===undefined)soldData[key]=0;localStorage.setItem("stockData",JSON.stringify(stockData));localStorage.setItem("soldData",JSON.stringify(soldData));const qty=stockData[key];stockEl.textContent=qty>0?`✅ In Stock (${qty})`:`⛔ Out of Stock`;stockEl.className="stock "+(qty>0?"ok":"bad");soldEl.textContent=soldData[key]>0?`${soldData[key]} sold`:"";return qty;}
+function addToCart(prod){const stockData=JSON.parse(localStorage.getItem("stockData"))||{};const soldData=JSON.parse(localStorage.getItem("soldData"))||{};const key=getStableId(prod);let currentStock=stockData[key]??0;let cart=JSON.parse(localStorage.getItem("cartData"))||[];const pid=getStableId(prod);const ex=cart.find(i=>String(i.id)===pid);if(ex)ex.quantity++;else cart.push({id:pid,name:prod.name,price:Number(prod.price)||0,img:prod.image,quantity:1});localStorage.setItem("cartData",JSON.stringify(cart));updateGoCartCount();if(currentStock>0){stockData[key]=currentStock-1;soldData[key]=(soldData[key]||0)+1;localStorage.setItem("stockData",JSON.stringify(stockData));localStorage.setItem("soldData",JSON.stringify(soldData));setStockUI(prod);toast("Added to cart");}else toast("Added to cart (currently out of stock)");}
+function toast(msg){let t=document.createElement("div");t.textContent=msg;t.style.cssText="position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:8px;box-shadow:var(--shadow);z-index:9999";document.body.appendChild(t);setTimeout(()=>t.remove(),1400);}
+function renderProduct(prod){PRODUCT=prod;titleEl.textContent=prod.name||"";descEl.textContent=prod.description||"";priceEl.textContent=fmt(prod.price);oldPriceEl.textContent=prod.oldPrice?fmt(prod.oldPrice):"";const imgs=[prod.image,...(Array.isArray(prod.extraImgs)?prod.extraImgs:[])];loadImages(imgs);setStockUI(prod);}
+function renderRelated(all,currentId){relatedGrid.innerHTML="";all.forEach(p=>{const pid=getStableId(p);if(pid===currentId)return;const card=document.createElement("a");card.className="rel-card";card.href=`product.html?id=${encodeURIComponent(pid)}`;card.innerHTML=`<img src="${p.image||""}" alt="${p.name||"Product"}"/><div class="rel-title">${p.name||""}</div><div class="rel-price">${p.oldPrice?`<span class="old-price">${fmt(p.oldPrice)}</span>`:""} ${fmt(p.price)}</div>`;card.onclick=(e)=>{e.preventDefault();urlId=pid;renderProduct(p);renderRelated(PRODUCTS,pid);history.pushState(null,null,`product.html?id=${encodeURIComponent(pid)}`);};relatedGrid.appendChild(card);});}
 
-  const imgEl = qs("#product-img");
-  const thumbs = qs("#thumbs");
-  const leftArrow = qs(".arrow.left");
-  const rightArrow = qs(".arrow.right");
-  const titleEl = qs("#product-title");
-  const descEl = qs("#product-description");
-  const priceEl = qs("#product-price");
-  const oldPriceEl = qs("#product-old-price");
-  const stockEl = qs("#stock-info");
-  const soldEl = qs("#sold-info");
-  const addBtn = qs("#add-to-cart-btn");
-  const relatedGrid = qs("#related-products");
+leftArrow.onclick=()=>{if(IMGS.length===0)return;currentIndex=(currentIndex-1+IMGS.length)%IMGS.length;imgEl.src=IMGS[currentIndex];qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));const sel=qsa("img",thumbs)[currentIndex];if(sel)sel.classList.add("selected");};
+rightArrow.onclick=()=>{if(IMGS.length===0)return;currentIndex=(currentIndex+1)%IMGS.length;imgEl.src=IMGS[currentIndex];qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));const sel=qsa("img",thumbs)[currentIndex];if(sel)sel.classList.add("selected");};
+addBtn.onclick=()=>{if(PRODUCT)addToCart(PRODUCT);else toast("Loading product…");};
 
-  function getStableId(p){ return String(p && (p._id ?? p.id ?? p.name ?? "")); }
-
-  function loadImages(images){
-    IMGS = images.filter(Boolean);
-    currentIndex = 0;
-    imgEl.src = IMGS[0]||"";
-    thumbs.innerHTML="";
-    IMGS.forEach((src,i)=>{
-      const t=document.createElement("img");
-      t.src=src;
-      if(i===0) t.classList.add("selected");
-      t.onclick=()=>{
-        currentIndex=i;
-        imgEl.src=src;
-        qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));
-        t.classList.add("selected");
-      };
-      thumbs.appendChild(t);
-    });
-  }
-
-  function setStockUI(prod){
-    const stockData = JSON.parse(localStorage.getItem("stockData"))||{};
-    const soldData = JSON.parse(localStorage.getItem("soldData"))||{};
-    const key = getStableId(prod);
-    if(stockData[key]===undefined) stockData[key]=10;
-    if(soldData[key]===undefined) soldData[key]=0;
-    localStorage.setItem("stockData",JSON.stringify(stockData));
-    localStorage.setItem("soldData",JSON.stringify(soldData));
-    const qty=stockData[key];
-    stockEl.textContent = qty>0 ? `✅ In Stock (${qty})`:`⛔ Out of Stock`;
-    stockEl.className="stock "+(qty>0?"ok":"bad");
-    soldEl.textContent = soldData[key]>0?`${soldData[key]} sold`:"";
-    return qty;
-  }
-
-  function addToCart(prod){
-    const stockData = JSON.parse(localStorage.getItem("stockData"))||{};
-    const soldData = JSON.parse(localStorage.getItem("soldData"))||{};
-    const key = getStableId(prod);
-    let currentStock = stockData[key]??0;
-    let cart = JSON.parse(localStorage.getItem("cartData"))||[];
-    const pid = getStableId(prod);
-    const ex = cart.find(i=>String(i.id)===pid);
-    if(ex) ex.quantity++; else cart.push({id:pid,name:prod.name,price:Number(prod.price)||0,img:prod.image,quantity:1});
-    localStorage.setItem("cartData",JSON.stringify(cart));
-    updateGoCartCount();
-    if(currentStock>0){
-      stockData[key]=currentStock-1;
-      soldData[key]=(soldData[key]||0)+1;
-      localStorage.setItem("stockData",JSON.stringify(stockData));
-      localStorage.setItem("soldData",JSON.stringify(soldData));
-      setStockUI(prod);
-      toast("Added to cart");
-    } else toast("Added to cart (currently out of stock)");
-  }
-
-  function toast(msg){
-    let t=document.createElement("div");
-    t.textContent=msg;
-    t.style.cssText="position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:8px;box-shadow:var(--shadow);z-index:9999";
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),1400);
-  }
-
-  function renderProduct(prod){
-    PRODUCT=prod;
-    titleEl.textContent=prod.name||"";
-    descEl.textContent=prod.description||"";
-    priceEl.textContent=fmt(prod.price);
-    oldPriceEl.textContent=prod.oldPrice?fmt(prod.oldPrice):"";
-    const imgs=[prod.image,...(Array.isArray(prod.extraImgs)?prod.extraImgs:[])];
-    loadImages(imgs);
-    setStockUI(prod);
-  }
-
-  function renderRelated(all,currentId){
-    relatedGrid.innerHTML="";
-    all.forEach(p=>{
-      const pid=getStableId(p);
-      if(pid===currentId) return; // skip current product
-      const card=document.createElement("a");
-      card.className="rel-card";
-      card.href=`product.html?id=${encodeURIComponent(pid)}`;
-      card.innerHTML=`
-        <img src="${p.image||""}" alt="${p.name||"Product"}"/>
-        <div class="rel-title">${p.name||""}</div>
-        <div class="rel-price">${p.oldPrice?`<span class="old-price">${fmt(p.oldPrice)}</span>`:""} ${fmt(p.price)}</div>
-      `;
-      card.onclick=(e)=>{
-        e.preventDefault();
-        urlId=pid;
-        renderProduct(p);
-        renderRelated(PRODUCTS,pid);
-        history.pushState(null,null,`product.html?id=${encodeURIComponent(pid)}`);
-      };
-      relatedGrid.appendChild(card);
-    });
-  }
-
-  leftArrow.onclick=()=>{
-    if(IMGS.length===0) return;
-    currentIndex=(currentIndex-1+IMGS.length)%IMGS.length;
-    imgEl.src=IMGS[currentIndex];
-    qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));
-    const sel=qsa("img",thumbs)[currentIndex]; if(sel) sel.classList.add("selected");
-  };
-  rightArrow.onclick=()=>{
-    if(IMGS.length===0) return;
-    currentIndex=(currentIndex+1)%IMGS.length;
-    imgEl.src=IMGS[currentIndex];
-    qsa("img",thumbs).forEach(x=>x.classList.remove("selected"));
-    const sel=qsa("img",thumbs)[currentIndex]; if(sel) sel.classList.add("selected");
-  };
-
-  addBtn.onclick=()=>{
-    if(!PRODUCT){toast("Loading product…");return;}
-    addToCart(PRODUCT);
-  };
-
-  // Init
-  try{
-    const res=await fetch(API_URL);
-    if(!res.ok) throw new Error("Failed to fetch products");
-    PRODUCTS = Array.isArray(await res.json()) ? await res.json() : [];
-    let prod = PRODUCTS.find(p=>getStableId(p)===String(urlId)) || PRODUCTS[0];
-    if(!prod){toast("No products found");return;}
-    renderProduct(prod);
-    renderRelated(PRODUCTS,getStableId(prod));
-
-    // Handle browser back/forward navigation
-    window.onpopstate = ()=>{
-      const params = new URLSearchParams(location.search);
-      const id = params.get("id");
-      const prod = PRODUCTS.find(p=>getStableId(p)===id) || PRODUCTS[0];
-      renderProduct(prod);
-      renderRelated(PRODUCTS,getStableId(prod));
-    };
-
-  }catch(err){console.error(err);toast("Error loading data");}
-
+try{
+  const res=await fetch(API_URL);
+  PRODUCTS=Array.isArray(await res.json())?await res.json():[];
+  let prod=PRODUCTS.find(p=>getStableId(p)===String(urlId))||PRODUCTS[0];
+  renderProduct(prod);
+  renderRelated(PRODUCTS,getStableId(prod));
+  window.onpopstate=()=>{const params=new URLSearchParams(location.search);const id=params.get("id");const prod=PRODUCTS.find(p=>getStableId(p)===id)||PRODUCTS[0];renderProduct(prod);renderRelated(PRODUCTS,getStableId(prod));};
+}catch(err){console.error(err);toast("Error loading data");}
 })();
 </script>
 </body>
