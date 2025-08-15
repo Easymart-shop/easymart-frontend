@@ -337,37 +337,65 @@
         slides[current].classList.add('active');
       },3000);
     }
+// Fetch products from backend
+const container = document.getElementById("product-list-container");
 
-    // Fetch products from backend
-    const container = document.getElementById("product-list-container");
-    fetch("https://api.easymartsbd.com/api/products")
-      .then(res=>{ if(!res.ok) throw new Error("Failed to fetch products"); return res.json(); })
-      .then(data=>{
-        container.innerHTML="";
-        data.forEach(product=>{
-          const productHTML = `
-<div class="product" data-id="${product._id}">
-  <a href="product.html?id=${encodeURIComponent(product._id)}" style="text-decoration:none;color:inherit;">
-    <img src="${product.image}" alt="${product.name}" />
-    <h4>${product.name}</h4>
-    <p>
-      <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
-      ৳${product.price}
-    </p>
-    <p class="stock-info" style="font-weight:bold;color:${product.stock>0?'green':'red'};">
-      ${product.stock>0 ? `In Stock (${product.stock})` : 'Out of Stock'}
-    </p>
-    <p class="sold-info" style="font-weight:bold;color:blue;">
-      Sold: ${product.sold || 0}
-    </p>
-  </a>
-  <button class="add-to-cart-btn" type="button" ${product.stock<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
-</div>`;
-          container.insertAdjacentHTML('beforeend', productHTML);
-        });
-        addCartButtonListeners();
-      })
-      .catch(err=>{ console.error("Error fetching products:", err); container.innerHTML="<p style='color:red;'>Failed to load products.</p>"; });
+fetch("https://api.easymartsbd.com/api/products")
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to fetch products");
+    return res.json();
+  })
+  .then(data => {
+    container.innerHTML = "";
+
+    data.forEach(product => {
+      // Create product card
+      const card = document.createElement("div");
+      card.classList.add("product");
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <h4>${product.name}</h4>
+        <p>
+          <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
+          ৳${product.price}
+        </p>
+        <p class="stock-info" style="font-weight:bold;color:${product.stock>0?'green':'red'};">
+          ${product.stock>0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+        </p>
+        <p class="sold-info" style="font-weight:bold;color:blue;">
+          Sold: ${product.sold || 0}
+        </p>
+        <button class="add-to-cart-btn" type="button" ${product.stock<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
+      `;
+
+      // ✅ Product click event
+      card.addEventListener("click", (e) => {
+        // যদি Add to Cart button-এ ক্লিক হয়, তাহলে product view না করে শুধুমাত্র cart এ যোগ হবে
+        if(e.target.classList.contains("add-to-cart-btn")) return;
+
+        // Save selected product to localStorage
+        localStorage.setItem("selectedProduct", JSON.stringify(product));
+
+        // Go to product.html
+        window.location.href = "product.html";
+      });
+
+      // Add to cart button listener
+      const addBtn = card.querySelector(".add-to-cart-btn");
+      addBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent card click
+        addCart(product); // তোমার আগের addCart function call
+      });
+
+      container.appendChild(card);
+    });
+
+    // যদি আগে থেকে আলাদা function দিয়ে addCartButtonListeners() ব্যবহার করো, সেটা বাদ দিতে পারো
+  })
+  .catch(err => {
+    console.error("Error fetching products:", err);
+    container.innerHTML = "<p style='color:red;'>Failed to load products.</p>";
+  });
 
     // Add to cart
     function addCartButtonListeners() {
