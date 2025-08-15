@@ -6,95 +6,284 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding-top: 180px; padding-bottom: 200px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding-top: 180px; /* Navbar + top header + news ticker accommodate */
+      padding-bottom: 200px; /* Footer height */
+    }
 
     /* Top Header */
-    .top-header { position: fixed; top: 0; left: 0; width: 100%; color: #550202; text-align: center; padding: 2px 4px; background: transparent; z-index: 10000; transition: top 0.3s ease; }
+    .top-header { 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      color: #550202;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+      line-height: 1.3;
+      text-align: center;
+      padding: 2px 4px;
+      background: transparent;
+      z-index: 10000;
+    }
+
     .top-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0; }
-    .top-header h5 { font-size: 0.80rem; font-weight: 400; margin: 0; color: #555; font-style: normal; }
+    .top-header h5 { font-size: 0.80rem; font-weight: 400; margin: 0; color: #555555; font-style: normal; }
+
+    @media (max-width: 600px) {
+      .top-header h1 { font-size: 1.5rem; }
+      .top-header h5 { font-size: 0.60rem; }
+    }
 
     /* Navbar */
-    .navbar { background-color: #eae8e8; display: flex; flex-direction: column; align-items: center; position: fixed; top: 40px; width: 100%; z-index: 9999; gap: 10px; padding: 10px 0; transition: top 0.3s, padding 0.3s; }
-    .navbar.small { top: 0; padding: 5px 0; }
-    .navbar .logo img { height: 60px; object-fit: contain; transition: height 0.3s ease, opacity 0.3s ease; }
-    .navbar.compact .logo { display: none; }
-    .navbar .menu-right { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .navbar .menu-right a { text-decoration: none; color: rgb(8,0,0); font-size: 14px; padding: 6px 10px; }
-    .navbar .menu-right a:hover { color: #ffcc00; }
-    .navbar .search-box { margin-top: 10px; width: 100%; display: flex; justify-content: center; transition: margin 0.3s; }
-    .navbar .search-box input[type="text"] { width: 50%; padding: 8px; border: none; border-radius: 4px; background: rgb(246,242,242); color: rgb(14,0,0); }
-    .navbar .search-box button { margin-left: 8px; padding: 8px 12px; border: none; background-color: #28a745; color: white; border-radius: 4px; cursor: pointer; }
-    .navbar .search-box button:hover { background-color: #218838; }
-    .navbar.small .search-box { margin-top: 5px; }
+    .navbar {
+      background-color: #fd5e02;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      gap: 10px;
+      padding:5px;
+    }
 
-    /* News Ticker */
-    .news-ticker { background: #fbfbfb; color: #020000; overflow: hidden; position: fixed; top: 140px; width: 100%; height: 44px; line-height: 44px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 1000; transition: top 0.3s, opacity 0.3s; }
-    .news-ticker.hidden { opacity: 0; pointer-events: none; }
-    .news-ticker-title { background: #f5f5f5; color: rgb(6,0,0); padding: 0 20px; font-weight: 600; position: absolute; left: 0; top: 0; height: 100%; display: flex; align-items: center; border-right: 2px solid rgb(8,0,0); font-size: 15px; white-space: nowrap; }
-    .ticker-wrap { position: relative; margin-left: 150px; height: 100%; overflow: hidden; }
-    .ticker-move { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker 40s linear infinite; font-size: 14px; }
-    @keyframes ticker { 0% { transform: translateX(0%);} 100% { transform: translateX(-100%);} }
+    body { padding-top: 70px; /* navbar height অনুযায়ী এডজাস্ট */ }
+
+    .hamburger { display: none; font-size: 28px; cursor: pointer; z-index: 10001; }
+    .other-menu { display: flex; gap: 10px; z-index: 10001; }
+
+    /* Mobile view */
+    @media (max-width: 768px) {
+      .other-menu {
+        display: none;
+        flex-direction: column;
+        background: #fd5e02;
+        position: absolute;
+        top: 60px;
+        left: 10px;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .other-menu.open { display: flex; }
+      .hamburger { display: block; }
+    }
+
+    .navbar .logo img { height: 60px; object-fit: contain; }
+
+    .navbar .menu-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .navbar .menu-right a {
+      text-decoration: none;
+      color: rgb(8,0,0);
+      font-size: 14px;
+      position: relative;
+      z-index: 10001;
+      padding: 6px 10px;
+    }
+
+    .navbar .menu-right a.cart-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: rgb(8,0,0);
+      font-size: 14px;
+    }
+
+    .cart-icon { font-size: 24px; }
+    .cart-text { font-size: 12px; margin-top: 2px; }
+
+    .hamburger { display: none; cursor: pointer; flex-direction: column; align-items: center; font-size: 14px; }
+    .hamburger-icon { font-size: 28px; }
+    .hamburger-text { font-size: 12px; margin-top: 2px; }
+
+    @media (max-width: 768px) { .hamburger { display: flex; } }
+
+    .navbar .menu-right a:hover { color: #ffcc00; }
+
+    .navbar .search-box {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .navbar .search-box input[type="text"] {
+      width: 50%;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      background: rgb(246,242,242);
+      color: rgb(14,0,0);
+    }
+
+    .navbar .search-box button {
+      margin-left: 8px;
+      padding: 8px 12px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .navbar .search-box button:hover { background-color: #218838; }
+
+    @media (max-width: 768px) { .navbar .search-box input[type="text"] { width: 80%; } }
 
     /* Slider */
-    .slider { width: 100%; height: 300px; position: relative; overflow: hidden; margin: 10px auto; }
+    .slider { width: 100%; height: 400px; position: relative; overflow: hidden; margin: 10px auto; }
     .slider img.slide { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
     .slider img.slide.active { opacity: 1; z-index: 1; }
+    @media (max-width: 600px) { .slider { height: 400px; } }
 
     /* Product Section */
     .product-section { padding: 20px; margin-top: 10px; }
     .product-section h2 { margin-bottom: 15px; }
-    .products { display: grid; gap: 10px; justify-items: center; }
-    .product { background-color: white; padding: 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; cursor: pointer; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .product {
+      background-color: white;
+      padding: 5px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      max-width: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
     .product img { width: 100%; height: 120px; object-fit: cover; border-radius: 5px; }
     .product h4 { margin: 5px 0 3px; font-size: 14px; }
     .product p { font-size: 13px; margin: 2px 0; }
-    .product button { margin-top: 5px; padding: 4px 8px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    .product button {
+      margin-top: 5px;
+      padding: 4px 8px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
     .product button:hover { background-color: #218838; }
     .old-price { text-decoration: line-through; color: #888; margin-right: 6px; }
 
+    .cart-count {
+      background: red;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+
     /* Footer */
-    .top-footer { background-color: white; color: black; padding: 30px 20px; box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); margin-top: 40px; }
-    .top-footer-content { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .top-footer {
+      background-color: white;
+      color: black;
+      padding: 30px 20px;
+      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+      margin-top: 40px;
+    }
+
+    .top-footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     .footer-logo img { max-width: 130px; height: auto; margin-bottom: 15px; }
     .footer-details { font-size: 14px; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .top-footer-content { flex-direction: column; text-align: center; }
+      .footer-logo { margin-bottom: 10px; }
+    }
+
     footer { background-color: black; color: white; text-align: center; padding: 20px; }
 
-    /* Responsive Grid */
-    @media (min-width: 1200px) { .products { grid-template-columns: repeat(6, 1fr); } }
-    @media (max-width: 1199px) and (min-width: 768px) { .products { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 767px) { .products { grid-template-columns: repeat(2, 1fr); } }
+    /* Navbar shrink effect */
+    .navbar.shrink {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 5px 10px;
+    }
+
+    .navbar.shrink .logo img { height: 30px; }
+    .navbar.shrink .menu-right { flex-direction: row; gap: 8px; font-size: 12px; }
+    .navbar.shrink .search-box { margin-top: 0; }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .navbar { padding: 8px 5px; }
+      .navbar .logo img { height: 45px; }
+      .navbar .menu-right a { font-size: 12px; padding: 4px 6px; }
+      .navbar .search-box input[type="text"] { width: 60%; padding: 6px; }
+      .navbar.shrink .logo img { height: 35px; }
+      .navbar.shrink .search-box input[type="text"] { width: 50%; padding: 5px; }
+      .navbar.shrink .menu-right a { font-size: 11px; padding: 3px 5px; }
+    }
+
+    @media (max-width: 480px) {
+      .navbar .search-box input[type="text"] { width: 70%; }
+      .navbar.shrink .search-box input[type="text"] { width: 60%; }
+      .navbar .menu-right a { font-size: 10px; padding: 2px 4px; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Navbar -->
-  <div class="navbar" id="navbar">
-    <div class="logo"><img src="https://i.postimg.cc/wBXp84Cy/Whats-App-Image-2025-07-31-at-15-21-11-3b9eeb17.jpg" alt="EasyMart Logo"></div>
+  <div class="navbar">
+    <div class="logo">
+      <img src="https://i.postimg.cc/GmWhGKG6/Whats-App-Image-2025-08-15-at-11-08-52-1fce5f42.jpg" alt="EasyMart Logo">
+    </div>
+
     <div class="menu-right">
-      <a href="cart.html">Checkout Cart (<span id="cart-count">0</span>)</a>
+      <a href="cart.html" class="cart-link">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-text">Checkout Cart (<span id="cart-count">0</span>)</span>
+      </a>
+      <div class="hamburger" id="hamburger">
+        <span class="hamburger-icon">☰</span>
+        <span class="hamburger-text">Menu</span>
+      </div>
+    </div>
+
+    <div class="other-menu" id="otherMenu">
       <a href="account.html">Your Account</a>
       <a href="login.html">Login</a>
       <a href="register.html">Registration</a>
     </div>
+
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search in EasyMart" />
       <button id="searchBtn">Search</button>
-    </div>
-  </div>
-
-  <!-- Top Header -->
-  <div class="top-header" id="topHeader">
-    <h1>EasyMart</h1>
-    <h5>Online Shopping Made Easy</h5>
-  </div>
-
-  <!-- News Ticker -->
-  <div class="news-ticker" id="newsTicker">
-    <div class="news-ticker-title">💸 Discount News</div>
-    <div class="ticker-wrap">
-      <div class="ticker-move">
-        📢 EasyMart-এ শুরু হয়েছে বিশাল ছাড়! 🛍️ আজ রাত ১২টা পর্যন্ত ৭০% পর্যন্ত ছাড়! | 🚚 ফ্রি হোম ডেলিভারি ঢাকার মধ্যে! | ⭐ নতুন প্রোডাক্ট যোগ হয়েছে — এখনই ঘুরে দেখুন!
-      </div>
     </div>
   </div>
 
@@ -115,7 +304,9 @@
   <!-- Footer -->
   <div class="top-footer">
     <div class="top-footer-content">
-      <div class="footer-logo"><img src="https://i.postimg.cc/853WLQM7/Easymart-logo.jpg" alt="EasyMart Logo"></div>
+      <div class="footer-logo">
+        <img src="https://i.postimg.cc/853WLQM7/Easymart-logo.jpg" alt="EasyMart Logo">
+      </div>
       <div class="footer-details">
         <p><strong>Address:</strong> Naogaon sadar Naogaon, Rajshahi, Bangladesh</p>
         <p><strong>Phone:</strong> +880 1855920606</p>
@@ -126,105 +317,124 @@
       </div>
     </div>
   </div>
-  <footer>© 2025 EasyMart. All rights reserved.</footer>
 
-<script>
-  let cartData = JSON.parse(localStorage.getItem('cartData')) || [];
-  document.getElementById("cart-count").innerText = cartData.reduce((t,i)=>t+i.quantity,0);
+  <footer>
+    <p>© 2025 EasyMart. All rights reserved.</p>
+  </footer>
 
-  // Slider
-  const slides = document.querySelectorAll('.slider img.slide');
-  let current = 0;
-  if(slides.length>0){ setInterval(()=>{ slides[current].classList.remove('active'); current=(current+1)%slides.length; slides[current].classList.add('active'); },3000); }
+  <script>
+    // Cart data
+    let cartData = JSON.parse(localStorage.getItem('cartData')) || [];
+    document.getElementById("cart-count").innerText = cartData.reduce((t,i)=>t+i.quantity,0);
 
-  // Navbar scroll & ticker
-  let lastScrollTop = 0;
-  const navbar = document.getElementById('navbar');
-  const topHeader = document.getElementById('topHeader');
-  const newsTicker = document.getElementById('newsTicker');
-  window.addEventListener('scroll', ()=>{
-    let st = window.pageYOffset||document.documentElement.scrollTop;
-    if(st>lastScrollTop){ topHeader.style.top='-100px'; navbar.classList.add('small','compact'); newsTicker.classList.add('hidden'); }
-    else{ topHeader.style.top='0'; navbar.classList.remove('small','compact'); newsTicker.classList.remove('hidden'); }
-    lastScrollTop = st<=0?0:st;
-  });
+    // Slider
+    const slides = document.querySelectorAll('.slider img.slide');
+    let current = 0;
+    if(slides.length>0){
+      setInterval(()=>{
+        slides[current].classList.remove('active');
+        current = (current+1)%slides.length;
+        slides[current].classList.add('active');
+      },3000);
+    }
 
-  // Stock and sold sync
-  if(!localStorage.getItem("stockData")) localStorage.setItem("stockData", JSON.stringify({}));
-  if(!localStorage.getItem("soldData")) localStorage.setItem("soldData", JSON.stringify({}));
-
-  // Fetch products
-  const container = document.getElementById("product-list-container");
-  fetch("https://api.easymartsbd.com/api/products")
-    .then(res=>res.json())
-    .then(data=>{
-      container.innerHTML="";
-      const stockData = JSON.parse(localStorage.getItem("stockData"));
-      const soldData = JSON.parse(localStorage.getItem("soldData"));
-      data.forEach(p=>{
-        if(stockData[p._id]===undefined) stockData[p._id]=p.stock||10;
-        if(soldData[p._id]===undefined) soldData[p._id]=0;
-        const productHTML=`
-<div class="product" data-id="${p._id}" data-price="${p.price}">
-  <a href="product.html?id=${encodeURIComponent(p._id)}" style="text-decoration:none;color:inherit;">
-    <img src="${p.image}" alt="${p.name}" />
-    <h4>${p.name}</h4>
-    <p><span class="old-price">${p.oldPrice?p.oldPrice:''}</span>৳${p.price}</p>
-    <p class="stock-info" style="font-weight:bold;color:${stockData[p._id]>0?'green':'red'};">${stockData[p._id]>0?`In Stock (${stockData[p._id]})`:"Out of Stock"}</p>
-    <p class="sold-info" style="color:orange;font-weight:bold;">${soldData[p._id]>0?`${soldData[p._id]} sold`:""}</p>
+    // Fetch products from backend
+    const container = document.getElementById("product-list-container");
+    fetch("https://api.easymartsbd.com/api/products")
+      .then(res=>{ if(!res.ok) throw new Error("Failed to fetch products"); return res.json(); })
+      .then(data=>{
+        container.innerHTML="";
+        data.forEach(product=>{
+          const productHTML = `
+<div class="product" data-id="${product._id}">
+  <a href="product.html?id=${encodeURIComponent(product._id)}" style="text-decoration:none;color:inherit;">
+    <img src="${product.image}" alt="${product.name}" />
+    <h4>${product.name}</h4>
+    <p>
+      <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
+      ৳${product.price}
+    </p>
+    <p class="stock-info" style="font-weight:bold;color:${product.stock>0?'green':'red'};">
+      ${product.stock>0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+    </p>
+    <p class="sold-info" style="font-weight:bold;color:blue;">
+      Sold: ${product.sold || 0}
+    </p>
   </a>
-  <button class="add-to-cart-btn" ${stockData[p._id]<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
+  <button class="add-to-cart-btn" type="button" ${product.stock<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
 </div>`;
-        container.insertAdjacentHTML('beforeend',productHTML);
+          container.insertAdjacentHTML('beforeend', productHTML);
+        });
+        addCartButtonListeners();
+      })
+      .catch(err=>{ console.error("Error fetching products:", err); container.innerHTML="<p style='color:red;'>Failed to load products.</p>"; });
+
+    // Add to cart
+    function addCartButtonListeners() {
+      document.querySelectorAll(".add-to-cart-btn").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const productDiv = btn.closest('.product');
+          const name = productDiv.querySelector('h4').innerText;
+          const img = productDiv.querySelector('img').src;
+          const stockEl = productDiv.querySelector('.stock-info');
+          const soldEl = productDiv.querySelector('.sold-info');
+
+          // Price
+          const oldPriceEl = productDiv.querySelector('.old-price');
+          const priceEl = productDiv.querySelector('p');
+          let price;
+          if(oldPriceEl && oldPriceEl.innerText){
+            const oldPriceLength = oldPriceEl.innerText.replace(/[^\d.]/g,'').length;
+            const text = priceEl.innerText.replace(/[^\d.]/g,'');
+            price = parseFloat(text.slice(oldPriceLength));
+          } else { price = parseFloat(priceEl.innerText.replace(/[^\d.]/g,'')); }
+
+          // Add to cart
+          const existing = cartData.find(p=>p.name===name);
+          if(existing) existing.quantity+=1;
+          else cartData.push({name,price,quantity:1,img});
+
+          localStorage.setItem('cartData', JSON.stringify(cartData));
+          document.getElementById("cart-count").innerText = cartData.reduce((t,i)=>t+i.quantity,0);
+
+          // Update stock and sold locally
+          let stock = parseInt(stockEl.innerText.replace(/[^\d]/g,'')) - 1;
+          let sold = parseInt(soldEl.innerText.replace(/[^\d]/g,'')) + 1;
+          stockEl.innerText = stock>0?`In Stock (${stock})`:'Out of Stock';
+          soldEl.innerText = `Sold: ${sold}`;
+
+          if(stock<=0) btn.disabled=true;
+
+          alert("Product added to cart!");
+        });
       });
-      localStorage.setItem("stockData", JSON.stringify(stockData));
-      localStorage.setItem("soldData", JSON.stringify(soldData));
-      addCartButtonListeners();
-    });
+    }
 
-  function addCartButtonListeners(){
-    document.querySelectorAll(".add-to-cart-btn").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const productDiv=btn.closest('.product');
-        const id=productDiv.dataset.id;
-        const name=productDiv.querySelector('h4').innerText;
-        const price=parseFloat(productDiv.dataset.price);
-        const img=productDiv.querySelector('img').src;
-        let existing=cartData.find(p=>p.id===id);
-        if(existing) existing.quantity+=1;
-        else cartData.push({id,name,price,img,quantity:1});
-        localStorage.setItem('cartData',JSON.stringify(cartData));
-        document.getElementById("cart-count").innerText=cartData.reduce((t,i)=>t+i.quantity,0);
-
-        const stockData=JSON.parse(localStorage.getItem("stockData"));
-        const soldData=JSON.parse(localStorage.getItem("soldData"));
-        if(stockData[id]>0){ stockData[id]-=1; soldData[id]=(soldData[id]||0)+1; }
-        localStorage.setItem("stockData", JSON.stringify(stockData));
-        localStorage.setItem("soldData", JSON.stringify(soldData));
-
-        productDiv.querySelector(".stock-info").textContent = stockData[id]>0?`In Stock (${stockData[id]})`:"Out of Stock";
-        productDiv.querySelector(".stock-info").style.color = stockData[id]>0?"green":"red";
-        const soldEl=productDiv.querySelector(".sold-info");
-        if(soldData[id]>0){ soldEl.textContent=`${soldData[id]} sold`; soldEl.style.color="orange"; }
-        if(stockData[id]<=0) btn.disabled=true;
-
-        alert("Product added to cart!");
+    // Search
+    document.getElementById("searchInput").addEventListener("input", function(){
+      const keyword = this.value.toLowerCase();
+      const products = document.querySelectorAll(".product");
+      let firstMatch=false;
+      products.forEach(product=>{
+        const name = product.querySelector("h4").innerText.toLowerCase();
+        const isMatch = name.includes(keyword);
+        product.style.display=isMatch?"block":"none";
+        if(isMatch && !firstMatch){ product.scrollIntoView({behavior:"smooth",block:"center"}); firstMatch=true; }
       });
     });
-  }
 
-  // Search
-  document.getElementById("searchInput").addEventListener("input",function(){
-    const keyword=this.value.toLowerCase();
-    let firstMatch=false;
-    document.querySelectorAll(".product").forEach(p=>{
-      const name=p.querySelector("h4").innerText.toLowerCase();
-      const isMatch=name.includes(keyword);
-      p.style.display=isMatch?"block":"none";
-      if(isMatch && !firstMatch){ p.scrollIntoView({behavior:"smooth",block:"center"}); firstMatch=true;}
+    // Scroll shrink
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', ()=>{
+      if(window.scrollY > 50) navbar.classList.add('shrink');
+      else navbar.classList.remove('shrink');
     });
-  });
-  document.getElementById("searchBtn").addEventListener("click",()=>document.getElementById("searchInput").dispatchEvent(new Event("input")));
-</script>
+
+    // Hamburger toggle
+    const hamburger = document.getElementById("hamburger");
+    const otherMenu = document.getElementById("otherMenu");
+    hamburger.addEventListener("click", ()=>{ otherMenu.classList.toggle("open"); });
+  </script>
 </body>
 </html>
