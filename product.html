@@ -5,126 +5,96 @@
   <title>Product Details - EasyMart</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg: #f5f5f5; --card: #fff; --text: #111; --muted: #666; --brand: #088a2d;
-      --danger: #c62828; --shadow: 0 2px 8px rgba(0,0,0,.08); --radius: 12px;
+    :root{
+      --bg:#f5f5f5; --card:#fff; --text:#111; --muted:#666; --brand:#088a2d;
+      --danger:#c62828; --shadow:0 2px 8px rgba(0,0,0,.08); --radius:12px;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-    a { text-decoration: none; color: inherit; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
 
-    .container { max-width: 1100px; margin: auto; padding: 16px; }
-    .topbar {
-      position: sticky; top: 0; z-index: 1000;
-      background: rgba(255,255,255,.8);
-      backdrop-filter: blur(6px);
-      border-bottom: 1px solid #eee;
+    .container{max-width:1100px;margin:auto;padding:16px}
+    .topbar{
+      position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.8);
+      backdrop-filter:blur(6px);border-bottom:1px solid #eee
     }
-    .topbar-inner {
-      display: flex; gap: 10px; align-items: center;
-      justify-content: space-between; padding: 10px 16px;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 14px; border-radius: 8px; font-weight: 600;
-      box-shadow: var(--shadow);
-    }
-    .btn-brand { background: var(--brand); color: #fff; }
-    .btn-ghost { background: #fff; }
-    .btn:hover { opacity: .95; }
+    .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow)}
+    .btn-brand{background:var(--brand);color:#fff}
+    .btn-ghost{background:#fff}
+    .btn:hover{opacity:.95}
 
-    .product-wrap {
-      display: grid; grid-template-columns: 420px 1fr; gap: 20px;
-      background: var(--card); border-radius: var(--radius);
-      padding: 16px; box-shadow: var(--shadow);
+    .product-wrap{
+      display:grid;grid-template-columns:420px 1fr;gap:20px;
+      background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
     }
-    @media(max-width:900px) { .product-wrap { grid-template-columns: 1fr; } }
+    @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
+    .media{
+      position:relative;display:flex;flex-direction:column;gap:10px
+    }
+    .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
+    .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
+    .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
+    .thumbs img.selected{border-color:var(--brand)}
+    .arrow{
+      position:absolute;top:50%;transform:translateY(-50%);user-select:none;cursor:pointer;
+      background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;
+    }
+    .arrow.left{left:10px}
+    .arrow.right{right:10px}
 
-    .media { position: relative; display: flex; flex-direction: column; gap: 10px; }
-    .main-img {
-      width: 100%; height: 360px; border-radius: 10px;
-      object-fit: contain; background: #fafafa; border: 1px solid #eee;
-    }
-    .thumbs { display: flex; gap: 8px; overflow: auto; padding-bottom: 4px; }
-    .thumbs img {
-      width: 72px; height: 72px; border-radius: 8px;
-      object-fit: cover; border: 2px solid transparent;
-      cursor: pointer; background: #fafafa;
-    }
-    .thumbs img.selected { border-color: var(--brand); }
+    .info h1{margin:0 0 6px 0;font-size:24px}
+    .desc{color:var(--muted);line-height:1.5}
+    .price-row{margin-top:10px;font-size:20px;display:flex;align-items:center;gap:10px}
+    .old-price{text-decoration:line-through;color:var(--muted)}
+    .stock{margin-top:8px;font-weight:700}
+    .stock.ok{color:var(--brand)}
+    .stock.bad{color:var(--danger)}
+    .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+    .linklike{font-weight:700;color:var(--brand);text-decoration:underline}
 
-    .arrow {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      user-select: none; cursor: pointer;
-      background: rgba(0,0,0,.55); color: #fff;
-      border-radius: 50%; width: 36px; height: 36px;
-      display: grid; place-items: center;
-    }
-    .arrow.left { left: 10px; }
-    .arrow.right { right: 10px; }
+    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-top:16px}
 
-    .info h1 { margin: 0 0 6px 0; font-size: 24px; }
-    .desc { color: var(--muted); line-height: 1.5; }
-    .price-row {
-      margin-top: 10px; font-size: 20px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .old-price { text-decoration: line-through; color: var(--muted); }
-    .stock { margin-top: 8px; font-weight: 700; }
-    .stock.ok { color: var(--brand); }
-    .stock.bad { color: var(--danger); }
+    /* Reviews */
+    .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
+    .stars{color:#f5a623}
 
-    .cta { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .linklike { font-weight: 700; color: var(--brand); text-decoration: underline; }
+    /* Related grid: 6 per row on desktop; responsive breakpoints */
+    .related-grid{
+      display:grid;gap:12px;margin-top:10px
+    }
+    @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
+    @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
+    @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:576px) and (max-width:767px){.related-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:575px){.related-grid{grid-template-columns:repeat(2,1fr)}}
 
-    .card {
-      background: var(--card); border-radius: var(--radius);
-      padding: 14px; box-shadow: var(--shadow); margin-top: 16px;
+    .rel-card{
+      background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);
+      padding:8px;text-align:center;transition:transform .18s ease
     }
-
-    .related-grid {
-      display: grid; gap: 12px; margin-top: 10px;
-    }
-    @media(min-width:1200px) { .related-grid { grid-template-columns: repeat(6,1fr); } }
-    @media(min-width:992px) and (max-width:1199px) { .related-grid { grid-template-columns: repeat(5,1fr); } }
-    @media(min-width:768px) and (max-width:991px) { .related-grid { grid-template-columns: repeat(4,1fr); } }
-    @media(min-width:576px) and (max-width:767px) { .related-grid { grid-template-columns: repeat(3,1fr); } }
-    @media(max-width:575px) { .related-grid { grid-template-columns: repeat(2,1fr); } }
-
-    .rel-card {
-      background: #fff; border: 1px solid #eee;
-      border-radius: 10px; box-shadow: var(--shadow);
-      padding: 8px; text-align: center;
-      transition: transform .18s ease;
-    }
-    .rel-card:hover { transform: translateY(-2px); }
-    .rel-card img {
-      width: 100%; height: 120px; object-fit: cover;
-      border-radius: 8px; background: #fafafa;
-    }
-    .rel-title { font-size: 14px; margin: 8px 0 4px 0; }
-    .rel-price { font-size: 14px; }
+    .rel-card:hover{transform:translateY(-2px)}
+    .rel-card img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#fafafa}
+    .rel-title{font-size:14px;margin:8px 0 4px 0}
+    .rel-price{font-size:14px}
   </style>
 </head>
 <body>
+  <!-- Top bar -->
   <div class="topbar">
     <div class="topbar-inner container">
       <a class="btn btn-brand" href="index.html">🔙 Continue Shopping</a>
-      <a class="btn btn-ghost" href="cart.html">🛒 Go to Cart (<span id="go-cart-count">0</span>)</span></a>
+      <a class="btn btn-ghost" href="cart.html">🛒 Go to Cart (<span id="go-cart-count">0</span>)</a>
     </div>
   </div>
 
   <div class="container">
+    <!-- Product -->
     <div class="product-wrap">
       <div class="media">
         <img id="product-img" class="main-img" src="" alt="Product"/>
-        <span class="arrow left">‹</span>
-        <span class="arrow right">›</span>
+        <span class="arrow left" title="Prev">‹</span>
+        <span class="arrow right" title="Next">›</span>
         <div id="thumbs" class="thumbs"></div>
       </div>
 
@@ -145,153 +115,245 @@
       </div>
     </div>
 
+    <!-- Reviews -->
     <div class="card">
-      <h3>Other Products</h3>
+      <h3 style="margin-top:0">Customer Reviews</h3>
+      <div id="review-list"></div>
+      <textarea id="review-text" rows="3" style="width:100%;border-radius:8px;padding:8px;border:1px solid #ddd" placeholder="Write your review..."></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+        <label>Rating:
+          <select id="review-rating">
+            <option value="1">★☆☆☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="4">★★★★☆</option>
+            <option value="5">★★★★★</option>
+          </select>
+        </label>
+        <button id="submit-review-btn" class="btn btn-ghost">Submit Review</button>
+      </div>
+    </div>
+
+    <!-- Related -->
+    <div class="card">
+      <h3 style="margin-top:0">Other Products</h3>
       <div id="related-products" class="related-grid"></div>
     </div>
   </div>
 
-  <script>
-    (function(){
-      const API_URL = "https://api.easymartsbd.com/api/products";
-      const qs = (s, el=document)=>el.querySelector(s);
-      const qsa = (s, el=document)=>[...el.querySelectorAll(s)];
-      const fmt = n => isNaN(Number(n)) ? "" : `৳${Number(n)}`;
+<script>
+(function(){
+  const API_URL = "https://api.easymartsbd.com/api/products";
 
-      const params = new URLSearchParams(location.search);
-      const urlId = params.get("id");
+  // --- Helpers ---
+  const qs = (s, el=document)=>el.querySelector(s);
+  const qsa = (s, el=document)=>[...el.querySelectorAll(s)];
+  const fmt = n => (n===undefined || n===null || isNaN(Number(n))) ? "" : `৳${Number(n)}`;
 
-      let PRODUCTS = [], PRODUCT = null, IMGS = [], currentIndex = 0;
+  // Cart count (topbar)
+  function updateGoCartCount(){
+    const cart = JSON.parse(localStorage.getItem("cartData")) || [];
+    const total = cart.reduce((s,i)=>s + (i.quantity||0), 0);
+    qs("#go-cart-count").textContent = total;
+  }
+  updateGoCartCount();
+  window.addEventListener("storage", e => {
+    if(e.key === "cartData") updateGoCartCount();
+  });
 
-      const imgEl = qs("#product-img");
-      const thumbs = qs("#thumbs");
-      const leftArrow = qs(".arrow.left");
-      const rightArrow = qs(".arrow.right");
-      const titleEl = qs("#product-title");
-      const descEl = qs("#product-description");
-            const priceEl = qs("#product-price");
-      const oldPriceEl = qs("#product-old-price");
-      const stockEl = qs("#stock-info");
-      const addBtn = qs("#add-to-cart-btn");
-      const relatedGrid = qs("#related-products");
+  // Ensure stock storage object
+  if(!localStorage.getItem("stockData")) localStorage.setItem("stockData", JSON.stringify({}));
 
-      function updateGoCartCount(){
-        const cart = JSON.parse(localStorage.getItem("cartData")) || [];
-        const total = cart.reduce((s,i)=>s + (i.quantity||0), 0);
-        qs("#go-cart-count").textContent = total;
-      }
-      updateGoCartCount();
-      window.addEventListener("storage", e => {
-        if(e.key === "cartData") updateGoCartCount();
-      });
+  // Read URL id (this must be backend _id)
+  const params = new URLSearchParams(location.search);
+  const urlId = params.get("id");
+  if(!urlId){
+    console.warn("No id in URL");
+  }
 
-      function toast(msg){
-        let t = document.createElement("div");
-        t.textContent = msg;
-        t.style.cssText = "position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:8px;box-shadow:var(--shadow);z-index:9999";
-        document.body.appendChild(t);
-        setTimeout(()=>{t.remove()},1400);
-      }
+  // State
+  let PRODUCTS = [];
+  let PRODUCT = null;
+  let IMGS = [];
+  let currentIndex = 0;
 
-      function loadImages(images){
-        IMGS = images.filter(Boolean);
-        currentIndex = 0;
-        imgEl.src = IMGS[0] || "";
-        thumbs.innerHTML = "";
-        IMGS.forEach((src,i)=>{
-          const t = document.createElement("img");
-          t.src = src;
-          if(i===0) t.classList.add("selected");
-          t.onclick = ()=>{
-            currentIndex = i;
-            imgEl.src = src;
-            qsa("img", thumbs).forEach(x=>x.classList.remove("selected"));
-            t.classList.add("selected");
-          };
-          thumbs.appendChild(t);
-        });
-      }
+  // DOM refs
+  const imgEl = qs("#product-img");
+  const thumbs = qs("#thumbs");
+  const leftArrow = qs(".arrow.left");
+  const rightArrow = qs(".arrow.right");
+  const titleEl = qs("#product-title");
+  const descEl = qs("#product-description");
+  const priceEl = qs("#product-price");
+  const oldPriceEl = qs("#product-old-price");
+  const stockEl = qs("#stock-info");
+  const addBtn = qs("#add-to-cart-btn");
+  const relatedGrid = qs("#related-products");
 
-      function renderProduct(prod){
-        PRODUCT = prod;
-        titleEl.textContent = prod.name || "";
-        descEl.textContent = prod.description || "";
-        priceEl.textContent = fmt(prod.price);
-        oldPriceEl.textContent = prod.oldPrice ? fmt(prod.oldPrice) : "";
-        const imgs = [prod.image, ...(Array.isArray(prod.extraImgs)?prod.extraImgs:[])];
-        loadImages(imgs);
-        const stock = prod.stock ?? 10;
-        stockEl.textContent = stock > 0 ? `✅ In Stock (${stock})` : `⛔ Out of Stock`;
-        stockEl.className = "stock " + (stock > 0 ? "ok" : "bad");
-      }
+  function getStableId(p){
+    // Always prefer backend _id
+    return String(p && (p._id ?? p.id ?? p.name ?? ""));
+  }
 
-      function renderRelated(all, currentId){
-        relatedGrid.innerHTML = "";
-        all.forEach(p=>{
-          if(String(p._id) === currentId) return;
-          const card = document.createElement("a");
-          card.className = "rel-card";
-          card.href = `product.html?id=${encodeURIComponent(p._id)}`;
-          card.innerHTML = `
-            <img src="${p.image||""}" alt="${p.name||"Product"}"/>
-            <div class="rel-title">${p.name||""}</div>
-            <div class="rel-price">
-              ${p.oldPrice ? `<span class="old-price">${fmt(p.oldPrice)}</span>` : ""} ${fmt(p.price)}
-            </div>
-          `;
-          relatedGrid.appendChild(card);
-        });
-      }
-
-      leftArrow.onclick = ()=>{
-        if(IMGS.length===0) return;
-        currentIndex = (currentIndex - 1 + IMGS.length) % IMGS.length;
-        imgEl.src = IMGS[currentIndex];
+  function loadImages(images){
+    IMGS = images.filter(Boolean);
+    currentIndex = 0;
+    imgEl.src = IMGS[0] || "";
+    // thumbs
+    thumbs.innerHTML = "";
+    IMGS.forEach((src,i)=>{
+      const t = document.createElement("img");
+      t.src = src;
+      if(i===0) t.classList.add("selected");
+      t.onclick = ()=>{
+        currentIndex = i;
+        imgEl.src = src;
         qsa("img", thumbs).forEach(x=>x.classList.remove("selected"));
-        const sel = qsa("img", thumbs)[currentIndex];
-        if(sel) sel.classList.add("selected");
+        t.classList.add("selected");
       };
-      rightArrow.onclick = ()=>{
-        if(IMGS.length===0) return;
-        currentIndex = (currentIndex + 1) % IMGS.length;
-        imgEl.src = IMGS[currentIndex];
-        qsa("img", thumbs).forEach(x=>x.classList.remove("selected"));
-        const sel = qsa("img", thumbs)[currentIndex];
-        if(sel) sel.classList.add("selected");
-      };
+      thumbs.appendChild(t);
+    });
+  }
 
-      addBtn.onclick = ()=>{
-        if(!PRODUCT){ toast("Loading product…"); return; }
-        let cart = JSON.parse(localStorage.getItem("cartData")) || [];
-        const pid = String(PRODUCT._id);
-        const ex = cart.find(i => String(i.id) === pid);
-        if(ex) ex.quantity++;
-        else cart.push({ id: pid, name: PRODUCT.name, price: Number(PRODUCT.price)||0, img: PRODUCT.image, quantity: 1 });
-        localStorage.setItem("cartData", JSON.stringify(cart));
-        updateGoCartCount();
-        toast("Added to cart");
-      };
+  function setStockUI(prod){
+    const stockData = JSON.parse(localStorage.getItem("stockData")) || {};
+    const key = getStableId(prod);
+    if(stockData[key] === undefined){
+      stockData[key] = 10; // default stock
+      localStorage.setItem("stockData", JSON.stringify(stockData));
+    }
+    const qty = stockData[key];
+    stockEl.textContent = qty > 0 ? `✅ In Stock (${qty})` : `⛔ Out of Stock`;
+    stockEl.className = "stock " + (qty>0 ? "ok":"bad");
+    return qty;
+  }
 
-      async function init(){
-        try {
-          const res = await fetch("https://api.easymartsbd.com/api/products");
-          const data = await res.json();
-          PRODUCTS = Array.isArray(data) ? data : [];
-          let prod = PRODUCTS.find(p => String(p._id) === String(urlId));
-          if(!prod){
-            toast("Product not found");
-            return;
-          }
-          renderProduct(prod);
-          renderRelated(PRODUCTS, String(prod._id));
-        } catch (err) {
-          console.error(err);
-          toast("Error loading product");
+  function addToCart(prod){
+    const stockData = JSON.parse(localStorage.getItem("stockData")) || {};
+    const key = getStableId(prod);
+    const currentStock = stockData[key] ?? 0;
+
+    let cart = JSON.parse(localStorage.getItem("cartData")) || [];
+    const pid = getStableId(prod);
+    const ex = cart.find(i => String(i.id) === pid);
+
+    if(ex) ex.quantity++;
+    else cart.push({ id: pid, name: prod.name, price: Number(prod.price)||0, img: prod.image, quantity: 1 });
+
+    localStorage.setItem("cartData", JSON.stringify(cart));
+    updateGoCartCount();
+
+    // Stock policy: do NOT disable Add button; warn if out of stock.
+    if(currentStock > 0){
+      stockData[key] = currentStock - 1;
+      localStorage.setItem("stockData", JSON.stringify(stockData));
+      setStockUI(prod);
+      toast("Added to cart");
+    }else{
+      toast("Added to cart (backorder - currently out of stock)");
+    }
+  }
+
+  // Lightweight toast
+  function toast(msg){
+    let t = document.createElement("div");
+    t.textContent = msg;
+    t.style.cssText = "position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:8px;box-shadow:var(--shadow);z-index:9999";
+    document.body.appendChild(t);
+    setTimeout(()=>{t.remove()},1400);
+  }
+
+  function renderProduct(prod){
+    PRODUCT = prod;
+    titleEl.textContent = prod.name || "";
+    descEl.textContent = prod.description || "";
+    priceEl.textContent = fmt(prod.price);
+    oldPriceEl.textContent = prod.oldPrice ? fmt(prod.oldPrice) : "";
+    const imgs = [prod.image, ...(Array.isArray(prod.extraImgs)?prod.extraImgs:[])];
+    loadImages(imgs);
+    setStockUI(prod);
+  }
+
+  function renderRelated(all, currentId){
+    relatedGrid.innerHTML = "";
+    all.forEach(p=>{
+      const pid = getStableId(p);
+      if(pid === currentId) return;
+      const card = document.createElement("a");
+      card.className = "rel-card";
+      card.href = `product.html?id=${encodeURIComponent(pid)}`;
+      card.innerHTML = `
+        <img src="${p.image||""}" alt="${p.name||"Product"}"/>
+        <div class="rel-title">${p.name||""}</div>
+        <div class="rel-price">
+          ${p.oldPrice ? `<span class="old-price">${fmt(p.oldPrice)}</span>` : ""} ${fmt(p.price)}
+        </div>
+      `;
+      relatedGrid.appendChild(card);
+    });
+  }
+
+  // Arrows
+  leftArrow.onclick = ()=>{
+    if(IMGS.length===0) return;
+    currentIndex = (currentIndex - 1 + IMGS.length) % IMGS.length;
+    imgEl.src = IMGS[currentIndex];
+    qsa("img", thumbs).forEach(x=>x.classList.remove("selected"));
+    const sel = qsa("img", thumbs)[currentIndex];
+    if(sel) sel.classList.add("selected");
+  };
+  rightArrow.onclick = ()=>{
+    if(IMGS.length===0) return;
+    currentIndex = (currentIndex + 1) % IMGS.length;
+    imgEl.src = IMGS[currentIndex];
+    qsa("img", thumbs).forEach(x=>x.classList.remove("selected"));
+    const sel = qsa("img", thumbs)[currentIndex];
+    if(sel) sel.classList.add("selected");
+  };
+
+  // Add to cart click
+  addBtn.onclick = ()=>{
+    if(!PRODUCT){ toast("Loading product…"); return; }
+    addToCart(PRODUCT);
+  };
+
+  // Fetch products and show one
+  async function init(){
+    try{
+      const res = await fetch(API_URL);
+      if(!res.ok) throw new Error("Failed to fetch products");
+      const data = await res.json();
+      PRODUCTS = Array.isArray(data) ? data : [];
+      // If coming from home page, links should already send _id as ?id=...
+      // Match strictly by backend _id
+      let prod = PRODUCTS.find(p => getStableId(p) === String(urlId));
+      // Fallbacks just in case some pages still pass id as p.id
+      if(!prod && urlId){
+        prod = PRODUCTS.find(p => String(p.id ?? "") === String(urlId));
+      }
+      if(!prod){
+        // If no id param, show the first product gracefully
+        prod = PRODUCTS[0];
+        if(!prod){
+          toast("No products found");
+          return;
         }
       }
+      renderProduct(prod);
+      renderRelated(PRODUCTS, getStableId(prod));
+    }catch(err){
+      console.error(err);
+      toast("Error loading data");
+      // Try to render at least a minimal UI if anything cached exists (optional)
+    }
+  }
 
-      init();
-    })();
-  </script>
+  init();
+
+})();
+</script>
 </body>
 </html>
+
+
+
