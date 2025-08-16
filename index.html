@@ -345,37 +345,49 @@
       },3000);
     }
 
-    // Fetch products from backend
-    const container = document.getElementById("product-list-container");
-    fetch("https://api.easymartsbd.com/api/products")
-      .then(res=>{ if(!res.ok) throw new Error("Failed to fetch products"); return res.json(); })
-      .then(data=>{
-        container.innerHTML="";
-        data.forEach(product=>{
-          const productHTML = `
+     // ✅ Dynamic API Base URL (Local vs Live)
+  const API_BASE_URL =
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://api.easymartsbd.com";
+
+  // ✅ Fetch products from backend
+  const container = document.getElementById("product-list-container");
+
+  fetch(`${API_BASE_URL}/api/products`)
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch products");
+      return res.json();
+    })
+    .then(data => {
+      container.innerHTML = "";
+      data.forEach(product => {
+        const productHTML = `
 <div class="product" data-id="${product._id}">
   <a href="product.html?id=${encodeURIComponent(product._id)}" style="text-decoration:none;color:inherit;">
-
     <img src="${product.image}" alt="${product.name}" />
     <h4>${product.name}</h4>
     <p>
       <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
       ৳${product.price}
     </p>
-    <p class="stock-info" style="font-weight:bold;color:${product.stock>0?'green':'red'};">
-      ${product.stock>0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+    <p class="stock-info" style="font-weight:bold;color:${product.stock > 0 ? 'green' : 'red'};">
+      ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
     </p>
     <p class="sold-info" style="font-weight:bold;color:blue;">
       Sold: ${product.sold || 0}
     </p>
   </a>
-  <button class="add-to-cart-btn" type="button" ${product.stock<=0?'disabled style="opacity:0.6;"':''}>Add to Cart</button>
+  <button class="add-to-cart-btn" type="button" ${product.stock <= 0 ? 'disabled style="opacity:0.6;"' : ''}>Add to Cart</button>
 </div>`;
-          container.insertAdjacentHTML('beforeend', productHTML);
-        });
-        addCartButtonListeners();
-      })
-      .catch(err=>{ console.error("Error fetching products:", err); container.innerHTML="<p style='color:red;'>Failed to load products.</p>"; });
+        container.insertAdjacentHTML("beforeend", productHTML);
+      });
+      addCartButtonListeners();
+    })
+    .catch(err => {
+      console.error("Error fetching products:", err);
+      container.innerHTML = "<p style='color:red;'>Failed to load products.</p>";
+    });
 
     // Add to cart
     function addCartButtonListeners() {
