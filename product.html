@@ -154,29 +154,45 @@
 
 
 <script>
-
 const urlParams = new URLSearchParams(window.location.search);
 const productId = urlParams.get("id");
 
-if(productId){
+if (productId) {
   fetch(`https://api.easymartsbd.com/api/products/${productId}`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch product");
+      return res.json();
+    })
     .then(product => {
       document.getElementById("product-details").innerHTML = `
-      
         <h2>${product.name}</h2>
-        <img src="${product.image}" alt="${product.name}" />
-        <p>Price: ৳${product.price}</p>
-        <p>${product.description || ''}</p>
+        <img src="${product.image}" alt="${product.name}" style="max-width:300px;display:block;margin:10px 0;" />
+        <p><strong>Price:</strong> ৳${product.price}</p>
+        <p><strong>Old Price:</strong> ${product.oldPrice ? '৳' + product.oldPrice : 'N/A'}</p>
+        <p><strong>Description:</strong> ${product.description || 'No description available.'}</p>
+        <p><strong>Stock:</strong> ${product.stock > 0 ? product.stock + ' available' : 'Out of stock'}</p>
+        <p><strong>Rating:</strong> ⭐ ${product.rating || 'No rating'}</p>
+        
+        <!-- যদি extraImgs থাকে তাহলে দেখানো -->
+        <div>
+          ${(product.extraImgs || []).map(img => 
+            `<img src="${img}" alt="extra" style="width:80px;margin:5px;border:1px solid #ccc;" />`
+          ).join('')}
+        </div>
       `;
     })
     .catch(err => {
-      console.error(err);
-      document.getElementById("product-details").innerHTML = "<p style='color:red;'>Product not found.</p>";
+      console.error("❌ Error:", err);
+      document.getElementById("product-details").innerHTML = 
+        "<p style='color:red;'>❌ Product not found.</p>";
     });
+} else {
+  document.getElementById("product-details").innerHTML = 
+    "<p style='color:red;'>❌ No product ID in URL.</p>";
 }
-
 </script>
+
+
 </body>
 </html>
 
