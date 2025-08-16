@@ -19,7 +19,7 @@
       backdrop-filter:blur(6px);border-bottom:1px solid #eee
     }
     .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
-    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow)}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow);cursor:pointer}
     .btn-brand{background:var(--brand);color:#fff}
     .btn-ghost{background:#fff}
     .btn:hover{opacity:.95}
@@ -29,19 +29,11 @@
       background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
     }
     @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
-    .media{
-      position:relative;display:flex;flex-direction:column;gap:10px
-    }
+    .media{position:relative;display:flex;flex-direction:column;gap:10px}
     .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
     .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
     .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
     .thumbs img.selected{border-color:var(--brand)}
-    .arrow{
-      position:absolute;top:50%;transform:translateY(-50%);user-select:none;cursor:pointer;
-      background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;
-    }
-    .arrow.left{left:10px}
-    .arrow.right{right:10px}
 
     .info h1{margin:0 0 6px 0;font-size:24px}
     .desc{color:var(--muted);line-height:1.5}
@@ -59,10 +51,8 @@
     .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
     .stars{color:#f5a623}
 
-    /* Related grid: 6 per row on desktop; responsive breakpoints */
-    .related-grid{
-      display:grid;gap:12px;margin-top:10px
-    }
+    /* Related grid */
+    .related-grid{display:grid;gap:12px;margin-top:10px}
     @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
     @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
     @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
@@ -93,8 +83,6 @@
     <div class="product-wrap">
       <div class="media">
         <img id="product-img" class="main-img" src="" alt="Product"/>
-        <span class="arrow left" title="Prev">‹</span>
-        <span class="arrow right" title="Next">›</span>
         <div id="thumbs" class="thumbs"></div>
       </div>
 
@@ -106,6 +94,7 @@
           <span id="product-price"></span>
         </div>
         <div id="stock-info" class="stock"></div>
+        <p id="product-rating"></p>
 
         <div class="cta">
           <button id="add-to-cart-btn" class="btn btn-brand">Add to Cart</button>
@@ -141,65 +130,97 @@
     </div>
   </div>
 
-  <div id="product-details">
-  <h2 id="product-name">Loading...</h2>
-  <img id="product-image" src="" alt="Product Image" style="max-width:300px;"/>
-  <p id="product-price"></p>
-  <p id="stock-info"></p>
-  <p id="product-description"></p>
-  <p id="stock-info"></p>
-
-</div>
-
-
-
 <script>
-  // ✅ Dynamic API Base URL (Local vs Live)
-  const API_BASE_URL =
-    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://api.easymartsbd.com";
-
+  const API_BASE_URL = "https://api.easymartsbd.com";
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id");
 
-  if (productId) {
-    fetch(`${API_BASE_URL}/api/products/${productId}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch product");
-        return res.json();
-      })
-      .then(product => {
-        document.getElementById("product-details").innerHTML = `
-          <h2>${product.name}</h2>
-          <img src="${product.image}" alt="${product.name}" style="max-width:300px;display:block;margin:10px 0;" />
-          <p><strong>Price:</strong> ৳${product.price}</p>
-          <p><strong>Old Price:</strong> ${product.oldPrice ? '৳' + product.oldPrice : 'N/A'}</p>
-          <p><strong>Description:</strong> ${product.description || 'No description available.'}</p>
-          <p><strong>Stock:</strong> ${product.stock > 0 ? product.stock + ' available' : 'Out of stock'}</p>
-          <p><strong>Rating:</strong> ⭐ ${product.rating || 'No rating'}</p>
+  // ✅ Load product details
+  async function loadProduct() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+      if (!res.ok) throw new Error("Failed to fetch product");
+      const product = await res.json();
 
-          <!-- যদি extraImgs থাকে তাহলে দেখানো -->
-          <div>
-            ${(product.extraImgs || []).map(img => 
-              `<img src="${img}" alt="extra" style="width:80px;margin:5px;border:1px solid #ccc;" />`
-            ).join('')}
-          </div>
-        `;
-      })
-      .catch(err => {
-        console.error("❌ Error:", err);
-        document.getElementById("product-details").innerHTML = 
-          "<p style='color:red;'>❌ Product not found.</p>";
-      });
-  } else {
-    document.getElementById("product-details").innerHTML = 
-      "<p style='color:red;'>❌ No product ID in URL.</p>";
+      document.getElementById("product-title").textContent = product.name;
+      document.getElementById("product-description").textContent = product.description;
+      document.getElementById("product-price").textContent = "৳" + product.price;
+      document.getElementById("product-old-price").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
+      document.getElementById("product-img").src = product.image;
+      document.getElementById("stock-info").textContent = product.stock > 0 ? "In Stock" : "Out of Stock";
+      document.getElementById("stock-info").className = product.stock > 0 ? "stock ok" : "stock bad";
+      document.getElementById("product-rating").textContent = "⭐ " + (product.rating || "No rating");
+
+      // Extra images (thumbnails)
+      const thumbsDiv = document.getElementById("thumbs");
+      thumbsDiv.innerHTML = "";
+      if (product.extraImgs && product.extraImgs.length > 0) {
+        product.extraImgs.forEach((img, i) => {
+          const t = document.createElement("img");
+          t.src = img;
+          if (i === 0) t.classList.add("selected");
+          t.onclick = () => {
+            document.getElementById("product-img").src = img;
+            document.querySelectorAll(".thumbs img").forEach(el => el.classList.remove("selected"));
+            t.classList.add("selected");
+          };
+          thumbsDiv.appendChild(t);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      document.querySelector(".product-wrap").innerHTML = "<p style='color:red'>❌ Failed to load product.</p>";
+    }
   }
-</script>
 
+  // ✅ Review System (LocalStorage ভিত্তিক)
+  function loadReviews() {
+    const key = "reviews_" + productId;
+    const reviews = JSON.parse(localStorage.getItem(key)) || [];
+    const list = document.getElementById("review-list");
+    list.innerHTML = reviews.map(r => `
+      <div class="review">
+        <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
+        <p>${r.text}</p>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("submit-review-btn").addEventListener("click", () => {
+    const text = document.getElementById("review-text").value.trim();
+    const rating = parseInt(document.getElementById("review-rating").value);
+    if (!text) return alert("Please write a review!");
+
+    const key = "reviews_" + productId;
+    const reviews = JSON.parse(localStorage.getItem(key)) || [];
+    reviews.push({ text, rating });
+    localStorage.setItem(key, JSON.stringify(reviews));
+
+    document.getElementById("review-text").value = "";
+    loadReviews();
+  });
+
+  // ✅ Related Products (Dummy data, কারণ API নাই)
+  function loadRelated() {
+    const related = [
+      {name:"Smart Watch", price:1500, image:"https://via.placeholder.com/200x150"},
+      {name:"Wireless Earbuds", price:1200, image:"https://via.placeholder.com/200x150"},
+      {name:"Power Bank", price:800, image:"https://via.placeholder.com/200x150"},
+      {name:"Phone Case", price:300, image:"https://via.placeholder.com/200x150"}
+    ];
+    const wrap = document.getElementById("related-products");
+    wrap.innerHTML = related.map(p => `
+      <div class="rel-card">
+        <img src="${p.image}" alt="${p.name}"/>
+        <div class="rel-title">${p.name}</div>
+        <div class="rel-price">৳${p.price}</div>
+      </div>
+    `).join("");
+  }
+
+  loadProduct();
+  loadReviews();
+  loadRelated();
+</script>
 </body>
 </html>
-
-
-
