@@ -135,8 +135,17 @@
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id");
 
+  console.log("🌐 Full URL:", window.location.href);
+  console.log("🆔 Extracted Product ID:", productId);
+
   // ✅ Load product details
   async function loadProduct() {
+    if (!productId) {
+      document.querySelector(".product-wrap").innerHTML = 
+        "<p style='color:red'>❌ No product ID found in URL.</p>";
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
       if (!res.ok) throw new Error("Failed to fetch product");
@@ -151,7 +160,7 @@
       document.getElementById("stock-info").className = product.stock > 0 ? "stock ok" : "stock bad";
       document.getElementById("product-rating").textContent = "⭐ " + (product.rating || "No rating");
 
-      // Extra images (thumbnails)
+      // ✅ Extra images (thumbnails)
       const thumbsDiv = document.getElementById("thumbs");
       thumbsDiv.innerHTML = "";
       if (product.extraImgs && product.extraImgs.length > 0) {
@@ -168,11 +177,10 @@
         });
       }
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error fetching product:", err);
       document.querySelector(".product-wrap").innerHTML = "<p style='color:red'>❌ Failed to load product.</p>";
     }
   }
-
   // ✅ Review System (LocalStorage ভিত্তিক)
   function loadReviews() {
     const key = "reviews_" + productId;
