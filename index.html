@@ -345,7 +345,7 @@
       },3000);
     }
 
-  // ✅ Dynamic API Base URL (Local vs Live)
+   // ✅ Dynamic API Base URL (Local vs Live)
   const API_BASE_URL =
     window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
       ? "http://localhost:5000"
@@ -364,8 +364,9 @@
       data.forEach(product => {
         const productHTML = `
 <div class="product" data-id="${product._id}">
- <a href="product.html?id=${product._id}">
+ <a href="product.html?id=${encodeURIComponent(product._id)}">View Product</a>
 
+     style="text-decoration:none;color:inherit;">
     <img src="${product.image}" alt="${product.name}" />
     <h4>${product.name}</h4>
     <p>
@@ -379,7 +380,10 @@
       Sold: ${product.sold || 0}
     </p>
   </a>
-  <button class="add-to-cart-btn" type="button" ${product.stock <= 0 ? 'disabled style="opacity:0.6;"' : ''}>Add to Cart</button>
+  <button class="add-to-cart-btn" type="button" 
+    ${product.stock <= 0 ? 'disabled style="opacity:0.6;"' : ''}>
+    Add to Cart
+  </button>
 </div>`;
         container.insertAdjacentHTML("beforeend", productHTML);
       });

@@ -12,29 +12,20 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
     a{text-decoration:none;color:inherit}
-
     .container{max-width:1100px;margin:auto;padding:16px}
-    .topbar{
-      position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.8);
-      backdrop-filter:blur(6px);border-bottom:1px solid #eee
-    }
+    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.8);backdrop-filter:blur(6px);border-bottom:1px solid #eee}
     .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
     .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow);cursor:pointer}
     .btn-brand{background:var(--brand);color:#fff}
     .btn-ghost{background:#fff}
     .btn:hover{opacity:.95}
-
-    .product-wrap{
-      display:grid;grid-template-columns:420px 1fr;gap:20px;
-      background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)
-    }
+    .product-wrap{display:grid;grid-template-columns:420px 1fr;gap:20px;background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
     @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
     .media{position:relative;display:flex;flex-direction:column;gap:10px}
     .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
     .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
     .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
     .thumbs img.selected{border-color:var(--brand)}
-
     .info h1{margin:0 0 6px 0;font-size:24px}
     .desc{color:var(--muted);line-height:1.5}
     .price-row{margin-top:10px;font-size:20px;display:flex;align-items:center;gap:10px}
@@ -44,25 +35,16 @@
     .stock.bad{color:var(--danger)}
     .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
     .linklike{font-weight:700;color:var(--brand);text-decoration:underline}
-
     .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-top:16px}
-
-    /* Reviews */
     .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
     .stars{color:#f5a623}
-
-    /* Related grid */
     .related-grid{display:grid;gap:12px;margin-top:10px}
     @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
     @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
     @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
     @media(min-width:576px) and (max-width:767px){.related-grid{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:575px){.related-grid{grid-template-columns:repeat(2,1fr)}}
-
-    .rel-card{
-      background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);
-      padding:8px;text-align:center;transition:transform .18s ease
-    }
+    .rel-card{background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);padding:8px;text-align:center;transition:transform .18s ease}
     .rel-card:hover{transform:translateY(-2px)}
     .rel-card img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#fafafa}
     .rel-title{font-size:14px;margin:8px 0 4px 0}
@@ -70,7 +52,6 @@
   </style>
 </head>
 <body>
-  <!-- Top bar -->
   <div class="topbar">
     <div class="topbar-inner container">
       <a class="btn btn-brand" href="index.html">🔙 Continue Shopping</a>
@@ -79,13 +60,11 @@
   </div>
 
   <div class="container">
-    <!-- Product -->
     <div class="product-wrap">
       <div class="media">
         <img id="product-img" class="main-img" src="" alt="Product"/>
         <div id="thumbs" class="thumbs"></div>
       </div>
-
       <div class="info">
         <h1 id="product-title"></h1>
         <p id="product-description" class="desc"></p>
@@ -95,7 +74,6 @@
         </div>
         <div id="stock-info" class="stock"></div>
         <p id="product-rating"></p>
-
         <div class="cta">
           <button id="add-to-cart-btn" class="btn btn-brand">Add to Cart</button>
           <a href="cart.html" class="btn btn-ghost">Go to Cart</a>
@@ -106,7 +84,7 @@
 
     <!-- Reviews -->
     <div class="card">
-      <h3 style="margin-top:0">Customer Reviews</h3>
+      <h3>Customer Reviews</h3>
       <div id="review-list"></div>
       <textarea id="review-text" rows="3" style="width:100%;border-radius:8px;padding:8px;border:1px solid #ddd" placeholder="Write your review..."></textarea>
       <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
@@ -125,7 +103,7 @@
 
     <!-- Related -->
     <div class="card">
-      <h3 style="margin-top:0">Other Products</h3>
+      <h3>Other Products</h3>
       <div id="related-products" class="related-grid"></div>
     </div>
   </div>
@@ -138,37 +116,32 @@
   console.log("🌐 Full URL:", window.location.href);
   console.log("🆔 Extracted Product ID:", productId);
 
-  let currentProduct = null; // later use (cart, etc.)
+  let currentProduct = null;
 
-  // ✅ Load product details
   async function loadProduct() {
     if (!productId) {
       document.querySelector(".product-wrap").innerHTML =
-        "<p style='color:red'>❌ No product ID found in URL.</p>";
+        "<p style='color:red'>❌ No product ID found in URL.<br> Example: <b>product.html?id=66c5a2ef40b98a3420b89f7d</b></p>";
       return;
     }
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
-      if (!res.ok) throw new Error("Failed to fetch product");
+      if (!res.ok) throw new Error(`Failed to fetch product (status ${res.status})`);
       const product = await res.json();
-      currentProduct = product; // save for cart
+      currentProduct = product;
 
+      // Show product info
       document.getElementById("product-title").textContent = product.name;
-      document.getElementById("product-description").textContent =
-        product.description || "No description available";
+      document.getElementById("product-description").textContent = product.description || "No description available";
       document.getElementById("product-price").textContent = "৳" + product.price;
-      document.getElementById("product-old-price").textContent =
-        product.oldPrice ? "৳" + product.oldPrice : "";
+      document.getElementById("product-old-price").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
       document.getElementById("product-img").src = product.image;
-      document.getElementById("stock-info").textContent =
-        product.stock > 0 ? "In Stock" : "Out of Stock";
-      document.getElementById("stock-info").className =
-        product.stock > 0 ? "stock ok" : "stock bad";
-      document.getElementById("product-rating").textContent =
-        "⭐ " + (product.rating || "No rating");
+      document.getElementById("stock-info").textContent = product.stock > 0 ? "In Stock" : "Out of Stock";
+      document.getElementById("stock-info").className = product.stock > 0 ? "stock ok" : "stock bad";
+      document.getElementById("product-rating").textContent = "⭐ " + (product.rating || "No rating");
 
-      // ✅ Extra images (thumbnails)
+      // Thumbnails
       const thumbsDiv = document.getElementById("thumbs");
       thumbsDiv.innerHTML = "";
       if (product.extraImgs && product.extraImgs.length > 0) {
@@ -178,16 +151,14 @@
           if (i === 0) t.classList.add("selected");
           t.onclick = () => {
             document.getElementById("product-img").src = img;
-            document
-              .querySelectorAll(".thumbs img")
-              .forEach(el => el.classList.remove("selected"));
+            document.querySelectorAll(".thumbs img").forEach(el => el.classList.remove("selected"));
             t.classList.add("selected");
           };
           thumbsDiv.appendChild(t);
         });
       }
 
-      // ✅ Add to Cart Button enable/disable
+      // Cart button
       const cartBtn = document.getElementById("add-to-cart-btn");
       if (product.stock <= 0) {
         cartBtn.disabled = true;
@@ -199,101 +170,21 @@
     } catch (err) {
       console.error("❌ Error fetching product:", err);
       document.querySelector(".product-wrap").innerHTML =
-        "<p style='color:red'>❌ Failed to load product.</p>";
+        "<p style='color:red'>❌ Failed to load product. Please check Product ID in URL.</p>";
     }
   }
 
-  // ✅ Add to Cart (localStorage ভিত্তিক)
   function addToCart() {
     if (!currentProduct) return;
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existing = cart.find(p => p._id === currentProduct._id);
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push({ ...currentProduct, qty: 1 });
-    }
+    if (existing) existing.qty += 1;
+    else cart.push({ ...currentProduct, qty: 1 });
     localStorage.setItem("cart", JSON.stringify(cart));
     alert("🛒 Added to cart!");
   }
 
-  // ✅ Review System (LocalStorage ভিত্তিক)
-  function loadReviews() {
-    const key = "reviews_" + productId;
-    const reviews = JSON.parse(localStorage.getItem(key)) || [];
-    const list = document.getElementById("review-list");
-    list.innerHTML = reviews
-      .map(
-        r => `
-      <div class="review">
-        <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(
-          5 - r.rating
-        )}</div>
-        <p>${r.text}</p>
-      </div>
-    `
-      )
-      .join("");
-  }
-
-  document
-    .getElementById("submit-review-btn")
-    .addEventListener("click", () => {
-      const text = document.getElementById("review-text").value.trim();
-      const rating = parseInt(document.getElementById("review-rating").value);
-      if (!text) return alert("Please write a review!");
-
-      const key = "reviews_" + productId;
-      const reviews = JSON.parse(localStorage.getItem(key)) || [];
-      reviews.push({ text, rating });
-      localStorage.setItem(key, JSON.stringify(reviews));
-
-      document.getElementById("review-text").value = "";
-      loadReviews();
-    });
-
-  // ✅ Related Products (Dummy data, কারণ API নাই)
-  function loadRelated() {
-    const related = [
-      {
-        name: "Smart Watch",
-        price: 1500,
-        image: "https://via.placeholder.com/200x150"
-      },
-      {
-        name: "Wireless Earbuds",
-        price: 1200,
-        image: "https://via.placeholder.com/200x150"
-      },
-      {
-        name: "Power Bank",
-        price: 800,
-        image: "https://via.placeholder.com/200x150"
-      },
-      {
-        name: "Phone Case",
-        price: 300,
-        image: "https://via.placeholder.com/200x150"
-      }
-    ];
-    const wrap = document.getElementById("related-products");
-    wrap.innerHTML = related
-      .map(
-        p => `
-      <div class="rel-card">
-        <img src="${p.image}" alt="${p.name}"/>
-        <div class="rel-title">${p.name}</div>
-        <div class="rel-price">৳${p.price}</div>
-      </div>
-    `
-      )
-      .join("");
-  }
-
-  // ✅ Init
   loadProduct();
-  loadReviews();
-  loadRelated();
 </script>
 
 </body>
