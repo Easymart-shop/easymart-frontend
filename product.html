@@ -2,178 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product Details - EasyMart</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      --bg:#f5f5f5; --card:#fff; --text:#111; --muted:#666; --brand:#088a2d;
-      --danger:#c62828; --shadow:0 2px 8px rgba(0,0,0,.08); --radius:12px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    a{text-decoration:none;color:inherit}
-    .container{max-width:1100px;margin:auto;padding:16px}
-    .topbar{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.8);backdrop-filter:blur(6px);border-bottom:1px solid #eee}
-    .topbar-inner{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px}
-    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-weight:600;box-shadow:var(--shadow);cursor:pointer}
-    .btn-brand{background:var(--brand);color:#fff}
-    .btn-ghost{background:#fff}
-    .btn:hover{opacity:.95}
-    .product-wrap{display:grid;grid-template-columns:420px 1fr;gap:20px;background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
-    @media(max-width:900px){.product-wrap{grid-template-columns:1fr}}
-    .media{position:relative;display:flex;flex-direction:column;gap:10px}
-    .main-img{width:100%;height:360px;border-radius:10px;object-fit:contain;background:#fafafa;border:1px solid #eee;cursor:zoom-in}
-    .thumbs{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
-    .thumbs img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid transparent;cursor:pointer;background:#fafafa}
-    .thumbs img.selected{border-color:var(--brand)}
-    .info h1{margin:0 0 6px 0;font-size:24px}
-    .desc{color:var(--muted);line-height:1.5}
-    .price-row{margin-top:10px;font-size:20px;display:flex;align-items:center;gap:10px}
-    .old-price{text-decoration:line-through;color:var(--muted)}
-    .stock{margin-top:8px;font-weight:700}
-    .stock.ok{color:var(--brand)}
-    .stock.bad{color:var(--danger)}
-    .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
-    .linklike{font-weight:700;color:var(--brand);text-decoration:underline}
-    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-top:16px}
-    .review{background:#fff;border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:10px}
-    .stars{color:#f5a623}
-    .related-grid{display:grid;gap:12px;margin-top:10px}
-    @media(min-width:1200px){.related-grid{grid-template-columns:repeat(6,1fr)}}
-    @media(min-width:992px) and (max-width:1199px){.related-grid{grid-template-columns:repeat(5,1fr)}}
-    @media(min-width:768px) and (max-width:991px){.related-grid{grid-template-columns:repeat(4,1fr)}}
-    @media(min-width:576px) and (max-width:767px){.related-grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:575px){.related-grid{grid-template-columns:repeat(2,1fr)}}
-    .rel-card{background:#fff;border:1px solid #eee;border-radius:10px;box-shadow:var(--shadow);padding:8px;text-align:center;transition:transform .18s ease}
-    .rel-card:hover{transform:translateY(-2px)}
-    .rel-card img{width:100%;height:120px;object-fit:cover;border-radius:8px;background:#fafafa}
-    .rel-title{font-size:14px;margin:8px 0 4px 0}
-    .rel-price{font-size:14px}
+    .product-details {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .product-details img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .price {
+      font-size: 1.2em;
+      color: green;
+      margin-top: 10px;
+    }
+    .old-price {
+      text-decoration: line-through;
+      color: gray;
+      margin-right: 5px;
+    }
+    .stock {
+      font-weight: bold;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner container">
-      <a class="btn btn-brand" href="index.html">🔙 Continue Shopping</a>
-      <a class="btn btn-ghost" href="cart.html">🛒 Go to Cart (<span id="go-cart-count">0</span>)</a>
-    </div>
+  <h1>Product Details</h1>
+  <div class="product-details">
+    <div id="product-container">Loading...</div>
   </div>
 
-  <div class="container">
-    <div class="product-wrap">
-      <div class="media">
-        <img id="product-img" class="main-img" src="" alt="Product"/>
-        <div id="thumbs" class="thumbs"></div>
-      </div>
-      <div class="info">
-        <h1 id="product-title"></h1>
-        <p id="product-description" class="desc"></p>
-        <div class="price-row">
-          <span id="product-old-price" class="old-price"></span>
-          <span id="product-price"></span>
-        </div>
-        <div id="stock-info" class="stock"></div>
-        <p id="product-rating"></p>
-        <div class="cta">
-          <button id="add-to-cart-btn" class="btn btn-brand">Add to Cart</button>
-          <a href="cart.html" class="btn btn-ghost">Go to Cart</a>
-          <a href="index.html" class="linklike">Continue shopping</a>
-        </div>
-      </div>
-    </div>
+  <script>
+    const API_BASE_URL =
+      window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : "https://api.easymartsbd.com";
 
-    <!-- Reviews -->
-    <div class="card">
-      <h3>Customer Reviews</h3>
-      <div id="review-list"></div>
-      <textarea id="review-text" rows="3" style="width:100%;border-radius:8px;padding:8px;border:1px solid #ddd" placeholder="Write your review..."></textarea>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-        <label>Rating:
-          <select id="review-rating">
-            <option value="1">★☆☆☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="4">★★★★☆</option>
-            <option value="5">★★★★★</option>
-          </select>
-        </label>
-        <button id="submit-review-btn" class="btn btn-ghost">Submit Review</button>
-      </div>
-    </div>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
 
-    <!-- Related -->
-    <div class="card">
-      <h3>Other Products</h3>
-      <div id="related-products" class="related-grid"></div>
-    </div>
-  </div>
+    const productContainer = document.getElementById("product-container");
 
-<script>
-  // ✅ Fix for /product URL (without .html)
-  (function () {
-    let currentPath = window.location.pathname;
+    async function loadProduct() {
+      if (!productId) {
+        productContainer.innerHTML =
+          "<p style='color:red'>❌ No product ID found in URL.<br> Example: <b>product.html?id=68942cfc4711443c0bb98ad6</b></p>";
+        return;
+      }
 
-    if (currentPath === "/product") {
-      // force it to product.html
-      window.history.replaceState({}, "", "/product.html" + window.location.search);
-    }
-  })();
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+        if (!res.ok) throw new Error("Product not found");
+        const product = await res.json();
 
-  // ✅ Dynamic API Base URL
-  const API_BASE_URL =
-    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://api.easymartsbd.com";
-
-  // ✅ Extract Product ID from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const productId = urlParams.get("id");
-
-  console.log("🌐 Full URL:", window.location.href);
-  console.log("🆔 Extracted Product ID:", productId);
-
-  let currentProduct = null;
-
-  // ✅ Load Product
-  async function loadProduct() {
-    if (!productId) {
-      document.querySelector(".product-wrap").innerHTML =
-        "<p style='color:red'>❌ No product ID found in URL.<br> Example: <b>product.html?id=66c5a2ef40b98a3420b89f7d</b></p>";
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
-      if (!res.ok) throw new Error(`Failed to fetch product (status ${res.status})`);
-      const product = await res.json();
-      currentProduct = product;
-
-      // ✅ Render product dynamically
-      document.querySelector(".product-wrap").innerHTML = `
-        <div class="product-details">
+        productContainer.innerHTML = `
           <img src="${product.image}" alt="${product.name}" />
           <h2>${product.name}</h2>
-          <p>${product.description || "No description available."}</p>
-          <p><strong>৳${product.price}</strong></p>
-          <p style="color:${product.stock > 0 ? "green" : "red"};">
-            ${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
+          <p class="price">
+            <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
+            ৳${product.price}
           </p>
-          <button ${product.stock <= 0 ? "disabled style='opacity:0.6;'" : ""}>
+          <p class="stock" style="color:${product.stock > 0 ? 'green' : 'red'};">
+            ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+          </p>
+          <p style="font-weight:bold;color:blue;">Sold: ${product.sold || 0}</p>
+          <p>${product.description || "No description available."}</p>
+          <button style="padding:10px 15px;margin-top:10px;background:teal;color:#fff;border:none;border-radius:6px;cursor:pointer;">
             Add to Cart
           </button>
-        </div>
-      `;
-    } catch (err) {
-      console.error("❌ Error loading product:", err);
-      document.querySelector(".product-wrap").innerHTML =
-        "<p style='color:red'>⚠️ Failed to load product. Please try again later.</p>";
+        `;
+      } catch (err) {
+        console.error(err);
+        productContainer.innerHTML = "<p style='color:red;'>❌ Failed to load product details.</p>";
+      }
     }
-  }
 
-  // ✅ Call function
-  loadProduct();
-</script>
-
-
+    loadProduct();
+  </script>
 </body>
 </html>
