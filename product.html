@@ -48,11 +48,13 @@
   </div>
 
   <script>
+    // ✅ Dynamic API Base URL
     const API_BASE_URL =
       window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
         ? "http://localhost:5000"
         : "https://api.easymartsbd.com";
 
+    // ✅ URL থেকে productId নেওয়া
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
 
@@ -66,10 +68,12 @@
       }
 
       try {
+        console.log("🔗 Fetching:", `${API_BASE_URL}/api/products/${productId}`);
         const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
         if (!res.ok) throw new Error("Product not found");
         const product = await res.json();
 
+        // ✅ Product details render করা
         productContainer.innerHTML = `
           <img src="${product.image}" alt="${product.name}" />
           <h2>${product.name}</h2>
@@ -87,7 +91,7 @@
           </button>
         `;
       } catch (err) {
-        console.error(err);
+        console.error("❌ Error loading product:", err);
         productContainer.innerHTML = "<p style='color:red;'>❌ Failed to load product details.</p>";
       }
     }
