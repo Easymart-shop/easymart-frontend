@@ -47,56 +47,51 @@
     <div id="product-container">Loading...</div>
   </div>
 
-  <script>
-    // ✅ Dynamic API Base URL
-    const API_BASE_URL =
-      window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-        ? "http://localhost:5000"
-        : "https://api.easymartsbd.com";
+ <script>
+  // ✅ সবসময় কাস্টম ডোমেইন ব্যবহার
+  const API_BASE_URL = "https://api.easymartsbd.com";
 
-    // ✅ URL থেকে productId নেওয়া
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get("id");
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("id");
 
-    const productContainer = document.getElementById("product-container");
+  const productContainer = document.getElementById("product-container");
 
-    async function loadProduct() {
-      if (!productId) {
-        productContainer.innerHTML =
-          "<p style='color:red'>❌ No product ID found in URL.<br> Example: <b>product.html?id=68942cfc4711443c0bb98ad6</b></p>";
-        return;
-      }
-
-      try {
-        console.log("🔗 Fetching:", `${API_BASE_URL}/api/products/${productId}`);
-        const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
-        if (!res.ok) throw new Error("Product not found");
-        const product = await res.json();
-
-        // ✅ Product details render করা
-        productContainer.innerHTML = `
-          <img src="${product.image}" alt="${product.name}" />
-          <h2>${product.name}</h2>
-          <p class="price">
-            <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
-            ৳${product.price}
-          </p>
-          <p class="stock" style="color:${product.stock > 0 ? 'green' : 'red'};">
-            ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
-          </p>
-          <p style="font-weight:bold;color:blue;">Sold: ${product.sold || 0}</p>
-          <p>${product.description || "No description available."}</p>
-          <button style="padding:10px 15px;margin-top:10px;background:teal;color:#fff;border:none;border-radius:6px;cursor:pointer;">
-            Add to Cart
-          </button>
-        `;
-      } catch (err) {
-        console.error("❌ Error loading product:", err);
-        productContainer.innerHTML = "<p style='color:red;'>❌ Failed to load product details.</p>";
-      }
+  async function loadProduct() {
+    if (!productId) {
+      productContainer.innerHTML =
+        "<p style='color:red'>❌ No product ID found in URL.<br> Example: <b>product.html?id=68942cfc4711443c0bb98ad6</b></p>";
+      return;
     }
 
-    loadProduct();
-  </script>
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+      if (!res.ok) throw new Error("Product not found");
+      const product = await res.json();
+
+      productContainer.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <h2>${product.name}</h2>
+        <p class="price">
+          <span class="old-price">${product.oldPrice ? '৳' + product.oldPrice : ''}</span>
+          ৳${product.price}
+        </p>
+        <p class="stock" style="color:${product.stock > 0 ? 'green' : 'red'};">
+          ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+        </p>
+        <p style="font-weight:bold;color:blue;">Sold: ${product.sold || 0}</p>
+        <p>${product.description || "No description available."}</p>
+        <button style="padding:10px 15px;margin-top:10px;background:teal;color:#fff;border:none;border-radius:6px;cursor:pointer;">
+          Add to Cart
+        </button>
+      `;
+    } catch (err) {
+      console.error(err);
+      productContainer.innerHTML = "<p style='color:red;'>❌ Failed to load product details.</p>";
+    }
+  }
+
+  loadProduct();
+</script>
+
 </body>
 </html>
