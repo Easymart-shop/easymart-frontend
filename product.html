@@ -109,7 +109,23 @@
   </div>
 
 <script>
-  const API_BASE_URL = "https://api.easymartsbd.com";
+  // ✅ Fix for /product URL (without .html)
+  (function () {
+    let currentPath = window.location.pathname;
+
+    if (currentPath === "/product") {
+      // force it to product.html
+      window.history.replaceState({}, "", "/product.html" + window.location.search);
+    }
+  })();
+
+  // ✅ Dynamic API Base URL
+  const API_BASE_URL =
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://api.easymartsbd.com";
+
+  // ✅ Extract Product ID from URL
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id");
 
@@ -118,6 +134,7 @@
 
   let currentProduct = null;
 
+  // ✅ Load Product
   async function loadProduct() {
     if (!productId) {
       document.querySelector(".product-wrap").innerHTML =
@@ -131,61 +148,32 @@
       const product = await res.json();
       currentProduct = product;
 
-      // Show product info
-      document.getElementById("product-title").textContent = product.name;
-      document.getElementById("product-description").textContent = product.description || "No description available";
-      document.getElementById("product-price").textContent = "৳" + product.price;
-      document.getElementById("product-old-price").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
-      document.getElementById("product-img").src = product.image;
-      document.getElementById("stock-info").textContent = product.stock > 0 ? "In Stock" : "Out of Stock";
-      document.getElementById("stock-info").className = product.stock > 0 ? "stock ok" : "stock bad";
-      document.getElementById("product-rating").textContent = "⭐ " + (product.rating || "No rating");
-
-      // Thumbnails
-      const thumbsDiv = document.getElementById("thumbs");
-      thumbsDiv.innerHTML = "";
-      if (product.extraImgs && product.extraImgs.length > 0) {
-        product.extraImgs.forEach((img, i) => {
-          const t = document.createElement("img");
-          t.src = img;
-          if (i === 0) t.classList.add("selected");
-          t.onclick = () => {
-            document.getElementById("product-img").src = img;
-            document.querySelectorAll(".thumbs img").forEach(el => el.classList.remove("selected"));
-            t.classList.add("selected");
-          };
-          thumbsDiv.appendChild(t);
-        });
-      }
-
-      // Cart button
-      const cartBtn = document.getElementById("add-to-cart-btn");
-      if (product.stock <= 0) {
-        cartBtn.disabled = true;
-        cartBtn.style.opacity = "0.6";
-      } else {
-        cartBtn.disabled = false;
-        cartBtn.onclick = addToCart;
-      }
+      // ✅ Render product dynamically
+      document.querySelector(".product-wrap").innerHTML = `
+        <div class="product-details">
+          <img src="${product.image}" alt="${product.name}" />
+          <h2>${product.name}</h2>
+          <p>${product.description || "No description available."}</p>
+          <p><strong>৳${product.price}</strong></p>
+          <p style="color:${product.stock > 0 ? "green" : "red"};">
+            ${product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
+          </p>
+          <button ${product.stock <= 0 ? "disabled style='opacity:0.6;'" : ""}>
+            Add to Cart
+          </button>
+        </div>
+      `;
     } catch (err) {
-      console.error("❌ Error fetching product:", err);
+      console.error("❌ Error loading product:", err);
       document.querySelector(".product-wrap").innerHTML =
-        "<p style='color:red'>❌ Failed to load product. Please check Product ID in URL.</p>";
+        "<p style='color:red'>⚠️ Failed to load product. Please try again later.</p>";
     }
   }
 
-  function addToCart() {
-    if (!currentProduct) return;
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find(p => p._id === currentProduct._id);
-    if (existing) existing.qty += 1;
-    else cart.push({ ...currentProduct, qty: 1 });
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("🛒 Added to cart!");
-  }
-
+  // ✅ Call function
   loadProduct();
 </script>
+
 
 </body>
 </html>
