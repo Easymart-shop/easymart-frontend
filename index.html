@@ -345,7 +345,7 @@
       },3000);
     }
 
-     // ✅ Dynamic API Base URL (Local vs Live)
+  // ✅ Dynamic API Base URL (Local vs Live)
   const API_BASE_URL =
     window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
       ? "http://localhost:5000"
@@ -364,8 +364,7 @@
       data.forEach(product => {
         const productHTML = `
 <div class="product" data-id="${product._id}">
-  <a href="product.html?id=${encodeURIComponent(product._id || product.id)}" style="text-decoration:none;color:inherit;">
-
+  <a href="/product.html?id=${encodeURIComponent(product._id)}" style="text-decoration:none;color:inherit;">
     <img src="${product.image}" alt="${product.name}" />
     <h4>${product.name}</h4>
     <p>

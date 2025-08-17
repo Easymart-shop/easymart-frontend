@@ -138,10 +138,12 @@
   console.log("🌐 Full URL:", window.location.href);
   console.log("🆔 Extracted Product ID:", productId);
 
+  let currentProduct = null; // later use (cart, etc.)
+
   // ✅ Load product details
   async function loadProduct() {
     if (!productId) {
-      document.querySelector(".product-wrap").innerHTML = 
+      document.querySelector(".product-wrap").innerHTML =
         "<p style='color:red'>❌ No product ID found in URL.</p>";
       return;
     }
@@ -150,15 +152,21 @@
       const res = await fetch(`${API_BASE_URL}/api/products/${productId}`);
       if (!res.ok) throw new Error("Failed to fetch product");
       const product = await res.json();
+      currentProduct = product; // save for cart
 
       document.getElementById("product-title").textContent = product.name;
-      document.getElementById("product-description").textContent = product.description;
+      document.getElementById("product-description").textContent =
+        product.description || "No description available";
       document.getElementById("product-price").textContent = "৳" + product.price;
-      document.getElementById("product-old-price").textContent = product.oldPrice ? "৳" + product.oldPrice : "";
+      document.getElementById("product-old-price").textContent =
+        product.oldPrice ? "৳" + product.oldPrice : "";
       document.getElementById("product-img").src = product.image;
-      document.getElementById("stock-info").textContent = product.stock > 0 ? "In Stock" : "Out of Stock";
-      document.getElementById("stock-info").className = product.stock > 0 ? "stock ok" : "stock bad";
-      document.getElementById("product-rating").textContent = "⭐ " + (product.rating || "No rating");
+      document.getElementById("stock-info").textContent =
+        product.stock > 0 ? "In Stock" : "Out of Stock";
+      document.getElementById("stock-info").className =
+        product.stock > 0 ? "stock ok" : "stock bad";
+      document.getElementById("product-rating").textContent =
+        "⭐ " + (product.rating || "No rating");
 
       // ✅ Extra images (thumbnails)
       const thumbsDiv = document.getElementById("thumbs");
@@ -170,65 +178,123 @@
           if (i === 0) t.classList.add("selected");
           t.onclick = () => {
             document.getElementById("product-img").src = img;
-            document.querySelectorAll(".thumbs img").forEach(el => el.classList.remove("selected"));
+            document
+              .querySelectorAll(".thumbs img")
+              .forEach(el => el.classList.remove("selected"));
             t.classList.add("selected");
           };
           thumbsDiv.appendChild(t);
         });
       }
+
+      // ✅ Add to Cart Button enable/disable
+      const cartBtn = document.getElementById("add-to-cart-btn");
+      if (product.stock <= 0) {
+        cartBtn.disabled = true;
+        cartBtn.style.opacity = "0.6";
+      } else {
+        cartBtn.disabled = false;
+        cartBtn.onclick = addToCart;
+      }
     } catch (err) {
       console.error("❌ Error fetching product:", err);
-      document.querySelector(".product-wrap").innerHTML = "<p style='color:red'>❌ Failed to load product.</p>";
+      document.querySelector(".product-wrap").innerHTML =
+        "<p style='color:red'>❌ Failed to load product.</p>";
     }
   }
+
+  // ✅ Add to Cart (localStorage ভিত্তিক)
+  function addToCart() {
+    if (!currentProduct) return;
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(p => p._id === currentProduct._id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ ...currentProduct, qty: 1 });
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("🛒 Added to cart!");
+  }
+
   // ✅ Review System (LocalStorage ভিত্তিক)
   function loadReviews() {
     const key = "reviews_" + productId;
     const reviews = JSON.parse(localStorage.getItem(key)) || [];
     const list = document.getElementById("review-list");
-    list.innerHTML = reviews.map(r => `
+    list.innerHTML = reviews
+      .map(
+        r => `
       <div class="review">
-        <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(5-r.rating)}</div>
+        <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(
+          5 - r.rating
+        )}</div>
         <p>${r.text}</p>
       </div>
-    `).join("");
+    `
+      )
+      .join("");
   }
 
-  document.getElementById("submit-review-btn").addEventListener("click", () => {
-    const text = document.getElementById("review-text").value.trim();
-    const rating = parseInt(document.getElementById("review-rating").value);
-    if (!text) return alert("Please write a review!");
+  document
+    .getElementById("submit-review-btn")
+    .addEventListener("click", () => {
+      const text = document.getElementById("review-text").value.trim();
+      const rating = parseInt(document.getElementById("review-rating").value);
+      if (!text) return alert("Please write a review!");
 
-    const key = "reviews_" + productId;
-    const reviews = JSON.parse(localStorage.getItem(key)) || [];
-    reviews.push({ text, rating });
-    localStorage.setItem(key, JSON.stringify(reviews));
+      const key = "reviews_" + productId;
+      const reviews = JSON.parse(localStorage.getItem(key)) || [];
+      reviews.push({ text, rating });
+      localStorage.setItem(key, JSON.stringify(reviews));
 
-    document.getElementById("review-text").value = "";
-    loadReviews();
-  });
+      document.getElementById("review-text").value = "";
+      loadReviews();
+    });
 
   // ✅ Related Products (Dummy data, কারণ API নাই)
   function loadRelated() {
     const related = [
-      {name:"Smart Watch", price:1500, image:"https://via.placeholder.com/200x150"},
-      {name:"Wireless Earbuds", price:1200, image:"https://via.placeholder.com/200x150"},
-      {name:"Power Bank", price:800, image:"https://via.placeholder.com/200x150"},
-      {name:"Phone Case", price:300, image:"https://via.placeholder.com/200x150"}
+      {
+        name: "Smart Watch",
+        price: 1500,
+        image: "https://via.placeholder.com/200x150"
+      },
+      {
+        name: "Wireless Earbuds",
+        price: 1200,
+        image: "https://via.placeholder.com/200x150"
+      },
+      {
+        name: "Power Bank",
+        price: 800,
+        image: "https://via.placeholder.com/200x150"
+      },
+      {
+        name: "Phone Case",
+        price: 300,
+        image: "https://via.placeholder.com/200x150"
+      }
     ];
     const wrap = document.getElementById("related-products");
-    wrap.innerHTML = related.map(p => `
+    wrap.innerHTML = related
+      .map(
+        p => `
       <div class="rel-card">
         <img src="${p.image}" alt="${p.name}"/>
         <div class="rel-title">${p.name}</div>
         <div class="rel-price">৳${p.price}</div>
       </div>
-    `).join("");
+    `
+      )
+      .join("");
   }
 
+  // ✅ Init
   loadProduct();
   loadReviews();
   loadRelated();
 </script>
+
 </body>
 </html>
